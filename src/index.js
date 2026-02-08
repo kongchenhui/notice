@@ -36,3 +36,10 @@ function run() {
 schedule.scheduleJob("0 7-23/2 * * *", () => {
   run();
 });
+
+function runFirstTime() {
+  logger.info("程序启动，首次获取电费信息...");
+  run();
+}
+
+runFirstTime();
