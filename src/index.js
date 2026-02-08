@@ -32,8 +32,6 @@ function run() {
     .catch(logger.error);
 }
 
-run();
-
 // node-schedule 7点到23点每隔2小时执行一次
 schedule.scheduleJob("0 7-23/2 * * *", () => {
   run();
