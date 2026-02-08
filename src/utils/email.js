@@ -18,8 +18,15 @@ const transporter = nodemailer.createTransport(config);
  * 发送通知邮件
  * @param {number|string} balance 剩余电度数
  * @param {number|string} total 总电度数
+ * @param {string} lastCommunicationTime 上次通讯时间
+ * @param {string} lastCommunicationStatus 上次通信状态
  */
-export function sendNoticeEmail(balance, total) {
+export function sendNoticeEmail({
+  balance,
+  total,
+  lastCommunicationTime,
+  lastCommunicationStatus,
+}) {
   const receiver = {
     from: `"system"<2604254084@qq.com>`,
     subject: `【余额预警】当前剩余电费: ${balance}度`,
@@ -27,6 +34,8 @@ export function sendNoticeEmail(balance, total) {
     html: `
           <p>当前剩余电费为: ${balance}度</p>
           <p>总电度数为: ${total}度</p>
+          <p>上次通讯时间: ${lastCommunicationTime}</p>
+          <p>上次通信状态: ${lastCommunicationStatus}</p>
           <p>请及时充值以免断电！</p>
           <p><a href="http://wuxishengangtiandi.wxjihisea.cn/A0SuZhou/DefaultSuZhou.aspx">查看详细信息</a></p>
           <p>Send by Balance Notice System</p>

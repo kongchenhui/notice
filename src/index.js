@@ -22,13 +22,22 @@ globalThis.logger = {
 
 function run() {
   getBalance()
-    .then(({ balance, total }) => {
-      logger.info("当前剩余电费:", balance);
-      logger.info("总电度数:", total);
-      if (balance < NOTICE_THRESHOLD) {
-        sendNoticeEmail(balance, total);
-      }
-    })
+    .then(
+      ({ balance, total, lastCommunicationTime, lastCommunicationStatus }) => {
+        logger.info("当前剩余电费:", balance);
+        logger.info("总电度数:", total);
+        logger.info("通讯时间:", lastCommunicationTime);
+        logger.info("通信状态:", lastCommunicationStatus);
+        if (balance < NOTICE_THRESHOLD) {
+          sendNoticeEmail({
+            balance,
+            total,
+            lastCommunicationTime,
+            lastCommunicationStatus,
+          });
+        }
+      },
+    )
     .catch(logger.error);
 }
 

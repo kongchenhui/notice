@@ -29,11 +29,23 @@ export async function getBalance() {
       const m2 = text.match(
         /<td[^>]*>\s*表字\s*<\/td>\s*<td[^>]*>\s*([-+]?\d+(?:\.\d+)?)\s*<\/td>/i,
       );
+      const m3 = text.match(
+        /<td[^>]*>\s*上次通讯时间\s*<\/td>\s*<td[^>]*>\s*([^<]+?)\s*<\/td>/i,
+      );
+      const m4 = text.match(
+        /<td[^>]*>\s*上次通信状态\s*<\/td>\s*<td[^>]*>\s*([^<]+?)\s*<\/td>/i,
+      );
+
       if (!m || !m2) {
         return reject(new Error(`未找到剩余电费信息：${text}`));
       }
 
-      resolve({ balance: Number(m[1]), total: Number(m2[1]) });
+      resolve({
+        balance: Number(m[1]),
+        total: Number(m2[1]),
+        lastCommunicationTime: m3?.[1]?.trim() || "",
+        lastCommunicationStatus: m4?.[1]?.trim() || "",
+      });
     })
     .catch(reject);
   return promise;
