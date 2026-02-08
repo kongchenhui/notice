@@ -3,7 +3,7 @@ import { getBalance } from "./utils/api.js";
 import { sendNoticeEmail } from "./utils/email.js";
 import schedule from "node-schedule";
 
-const NOTICE_THRESHOLD = 20; // 电费通知阈值
+const NOTICE_THRESHOLD = 30; // 电费通知阈值
 
 globalThis.logger = {
   info: (...args) =>

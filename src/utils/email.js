@@ -32,11 +32,11 @@ export function sendNoticeEmail({
     subject: `【余额预警】当前剩余电费: ${balance}度`,
     to: "732792684@qq.com",
     html: `
-          <p>当前剩余电费为: ${balance}度</p>
-          <p>总电度数为: ${total}度</p>
-          <p>上次通讯时间: ${lastCommunicationTime}</p>
-          <p>上次通信状态: ${lastCommunicationStatus}</p>
-          <p>请及时充值以免断电！</p>
+          <p><span style="font-weight: bold;">当前剩余电费为：</span><span style="color: red;">${balance}</span>度</p>
+          <p><span style="font-weight: bold;">总电度数为：</span>${total}度</p>
+          <p><span style="font-weight: bold;">上次通讯时间：</span>${lastCommunicationTime}</p>
+          <p><span style="font-weight: bold;">上次通信状态：</span>${lastCommunicationStatus}</p>
+          <p><span style="font-weight: bold;">请及时充值以免断电！</span></p>
           <p><a href="http://wuxishengangtiandi.wxjihisea.cn/A0SuZhou/DefaultSuZhou.aspx">查看详细信息</a></p>
           <p>Send by Balance Notice System</p>
           `,
