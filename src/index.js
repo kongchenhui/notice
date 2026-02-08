@@ -20,6 +20,12 @@ globalThis.logger = {
     ),
 };
 
+function shouldSendNotice(balance) {
+  return (
+    balance < NOTICE_THRESHOLD && dayjs().hour() >= 7 && dayjs().hour() <= 23
+  );
+}
+
 function run() {
   getBalance()
     .then(
@@ -31,7 +37,7 @@ function run() {
           lastCommunicationStatus,
         ].join("|");
         logger.info(`获取到电费信息：${info}`);
-        if (balance < NOTICE_THRESHOLD) {
+        if (shouldSendNotice(balance)) {
           sendNoticeEmail({
             balance,
             total,
