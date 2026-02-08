@@ -14,9 +14,6 @@ importers:
       dayjs:
         specifier: ^1.11.19
         version: 1.11.19
-      dotenv:
-        specifier: ^17.2.4
-        version: 17.2.4
       node-schedule:
         specifier: ^2.1.0
         version: 2.1.1
@@ -50,10 +47,6 @@ packages:
   delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
-
-  dotenv@17.2.4:
-    resolution: {integrity: sha512-mudtfb4zRB4bVvdj0xRo+e6duH1csJRM8IukBqfTRvHotn9+LBXB8ynAidP9zHqoRC/fsllXgk4kCKlR21fIhw==}
-    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -176,8 +169,6 @@ snapshots:
   dayjs@1.11.19: {}
 
   delayed-stream@1.0.0: {}
-
-  dotenv@17.2.4: {}
 
   dunder-proto@1.0.1:
     dependencies:
