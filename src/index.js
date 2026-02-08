@@ -24,10 +24,13 @@ function run() {
   getBalance()
     .then(
       ({ balance, total, lastCommunicationTime, lastCommunicationStatus }) => {
-        logger.info("当前剩余电费:", balance);
-        logger.info("总电度数:", total);
-        logger.info("通讯时间:", lastCommunicationTime);
-        logger.info("通信状态:", lastCommunicationStatus);
+        const info = [
+          balance,
+          total,
+          lastCommunicationTime,
+          lastCommunicationStatus,
+        ].join("|");
+        logger.info(`获取到电费信息：${info}`);
         if (balance < NOTICE_THRESHOLD) {
           sendNoticeEmail({
             balance,
