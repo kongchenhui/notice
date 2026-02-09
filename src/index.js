@@ -5,6 +5,7 @@ import { getLastNoticeTime, setLastNoticeTime } from "./utils/noticeTime.js";
 import schedule from "node-schedule";
 
 const NOTICE_THRESHOLD = 20; // 电费通知阈值
+const NOTICE_INTERVAL_HOURS = 6; // 最小通知间隔时间，单位小时
 
 globalThis.logger = {
   info: (...args) =>
@@ -22,7 +23,6 @@ globalThis.logger = {
 };
 
 
-const NOTICE_INTERVAL_HOURS = 6;
 
 function shouldSendNotice(balance) {
   if (!(balance < NOTICE_THRESHOLD && dayjs().hour() >= 7 && dayjs().hour() <= 23)) {
@@ -30,8 +30,7 @@ function shouldSendNotice(balance) {
   }
   const last = getLastNoticeTime();
   if (!last) return true;
-  // 距离上次通知是否已超过6小时
-  return dayjs().diff(dayjs(last), "hour") >= NOTICE_INTERVAL_HOURS;
+  return dayjs().diff(last, "hour") >= NOTICE_INTERVAL_HOURS;
 }
 
 function run() {
