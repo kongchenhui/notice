@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { getBalance } from "./utils/api.js";
 import { sendNoticeEmail } from "./utils/email.js";
+import { getLastNoticeTime, setLastNoticeTime } from "./utils/noticeTime.js";
 import schedule from "node-schedule";
 
 const NOTICE_THRESHOLD = 20; // 电费通知阈值
@@ -20,10 +21,17 @@ globalThis.logger = {
     ),
 };
 
+
+const NOTICE_INTERVAL_HOURS = 6;
+
 function shouldSendNotice(balance) {
-  return (
-    balance < NOTICE_THRESHOLD && dayjs().hour() >= 7 && dayjs().hour() <= 23
-  );
+  if (!(balance < NOTICE_THRESHOLD && dayjs().hour() >= 7 && dayjs().hour() <= 23)) {
+    return false;
+  }
+  const last = getLastNoticeTime();
+  if (!last) return true;
+  // 距离上次通知是否已超过6小时
+  return dayjs().diff(dayjs(last), "hour") >= NOTICE_INTERVAL_HOURS;
 }
 
 function run() {
@@ -44,6 +52,7 @@ function run() {
             lastCommunicationTime,
             lastCommunicationStatus,
           });
+          setLastNoticeTime();
         }
       },
     )
@@ -51,7 +60,7 @@ function run() {
 }
 
 // node-schedule 7点到23点每隔2小时执行一次
-schedule.scheduleJob("15 1-23/2 * * *", () => {
+schedule.scheduleJob("15 * * * *", () => {
   run();
 });
 
