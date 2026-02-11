@@ -11,10 +11,10 @@ export const LOG_LINE_REGEX = /^\[(.+?)\]\s+\[INFO\]\s+获取到电费信息：(
  * @param {string} line
  * @returns {{
  *   time: string;
- *   balance: number | null;
- *   total: number | null;
- *   lastCommunicationTime: string | null;
- *   lastCommunicationStatus: string | null;
+ *   balance: number;
+ *   total: number;
+ *   lastCommunicationTime: string;
+ *   lastCommunicationStatus: string;
  * } | null}
  */
 export function parseLogLine(line) {
@@ -34,7 +34,7 @@ export function parseLogLine(line) {
     lastCommunicationTime: dayjs(lastCommunicationTime || time).format(
       "YYYY-MM-DD HH:mm:ss",
     ),
-    lastCommunicationStatus: lastCommunicationStatus,
+    lastCommunicationStatus: lastCommunicationStatus.trim(),
   };
 }
 
@@ -58,8 +58,8 @@ export async function parseLogFile(logFile) {
 
   for await (const line of rl) {
     const record = parseLogLine(line);
-    if (!record) continue;
-
+    if (!record || record.lastCommunicationStatus !== "成功") continue;
+    delete record.lastCommunicationStatus;
     records.push(record);
   }
 

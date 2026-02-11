@@ -160,20 +160,6 @@
         border-radius: 8px;
         border: 1px solid #1f2937;
       }
-      .pill {
-        padding: 2px 6px;
-        border-radius: 999px;
-        font-size: 11px;
-        display: inline-block;
-      }
-      .pill-ok {
-        background: rgba(22, 163, 74, 0.2);
-        color: #bbf7d0;
-      }
-      .pill-fail {
-        background: rgba(239, 68, 68, 0.2);
-        color: #fecaca;
-      }
       .footer {
         padding: 8px 16px 14px;
         font-size: 11px;
@@ -214,9 +200,6 @@
           <span id="statusText">正在初始化...</span>
         </div>
         <div id="lastUpdate" style="margin-top: 2px"></div>
-        <div style="margin-top: 2px; font-size: 11px; color: #9ca3af">
-          每 <strong>30 秒</strong> 自动刷新一次。
-        </div>
       </div>
     </header>
 
@@ -225,9 +208,6 @@
         <div class="card-header">
           <div>
             <div class="card-title">趋势 · 剩余电量 & 电表读数</div>
-            <div class="card-subtitle">
-              横轴为日志时间，左轴为剩余电量，右轴为电表读数。
-            </div>
           </div>
           <span class="chip" id="pointCount"></span>
         </div>
@@ -282,7 +262,7 @@
                 <th>读取时间</th>
                 <th>剩余电量</th>
                 <th>电表读数</th>
-                <th>读取状态</th>
+                <th>每小时用电量</th>
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -305,7 +285,7 @@
       const totalChartDom = document.getElementById("totalChart");
       const totalChart = echarts.init(totalChartDom);
       const hourlyChartDom = document.getElementById("hourlyChart");
-      const hourlyChart = hourlyChartDom ? echarts.init(hourlyChartDom) : null;
+      const hourlyChart = echarts.init(hourlyChartDom);
       const hourlyChartErrorEl = document.getElementById("hourlyChartError");
 
       function formatTimeStr(t) {
@@ -361,12 +341,9 @@
         statusTextEl.style.color = ok ? "#bbf7d0" : "#fecaca";
       }
 
-      function updateLastUpdate() {
+      function updateLastUpdate(timeStr) {
         const now = new Date();
-        const s = now.toLocaleString("zh-CN", {
-          hour12: false,
-        });
-        lastUpdateEl.textContent = "最近刷新：" + s;
+        lastUpdateEl.textContent = "最近刷新：" + (timeStr || "");
       }
 
       function renderTable(data) {
@@ -374,19 +351,12 @@
         const reversed = [...data].reverse(); // 最近的在上方
         for (const item of reversed) {
           const tr = document.createElement("tr");
-          const statusOk = String(item.lastCommunicationStatus || "").includes(
-            "成功",
-          );
 
           tr.innerHTML = `
             <td>${formatTimeStr(item.lastCommunicationTime)}</td>
             <td>${formatNumber(item.balance)}</td>
             <td>${formatNumber(item.total)}</td>
-            <td>
-              <span class="pill ${
-                statusOk ? "pill-ok" : "pill-fail"
-              }">${item.lastCommunicationStatus || "--"}</span>
-            </td>
+            <td>${item.hourlyUsage != null ? formatNumber(item.hourlyUsage, 3) + " kWh" : "--"}</td>
           `;
           tableBodyEl.appendChild(tr);
         }
@@ -591,8 +561,6 @@
       }
 
       function renderHourlyChart(data) {
-        if (!hourlyChart) return;
-
         if (!data.length) {
           hourlyChart.clear();
           if (hourlyChartErrorEl) {
@@ -755,7 +723,7 @@
           renderTable(data);
           renderSummary(latest, data);
           updateStatus(true, "数据已更新");
-          updateLastUpdate();
+          updateLastUpdate(latest?.lastCommunicationTime);
         } catch (err) {
           console.error(err);
           updateStatus(false, "请求失败，请检查服务或网络");
@@ -765,14 +733,11 @@
       }
 
       fetchData();
-      setInterval(fetchData, 30000);
 
       window.addEventListener("resize", () => {
         balanceChart.resize();
         totalChart.resize();
-        if (hourlyChart) {
-          hourlyChart.resize();
-        }
+        hourlyChart.resize();
       });
     </script>
   </body>

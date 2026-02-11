@@ -9,14 +9,26 @@ import { getDefaultLogFile } from "./logPath.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 日志路径：优先使用 LOG_FILE，未设置则自动从当前用户目录推断：
-//   ~/.pm2/logs/<appName>-out.log
-// appName 优先取 PM2_APP_NAME、npm_package_name，其次为 "notice"
 const LOG_FILE = getDefaultLogFile();
 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
+
+globalThis.logger = {
+  info: (...args) =>
+    console.log(
+      `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}]`,
+      "[INFO]",
+      ...args,
+    ),
+  error: (...args) =>
+    console.error(
+      `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}]`,
+      "[ERROR]",
+      ...args,
+    ),
+};
 
 // 静态资源
 const publicDir = path.join(__dirname, "public");
@@ -98,6 +110,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`电费监控 Web 服务已启动：http://localhost:${PORT}`);
-  console.log(`使用日志文件：${LOG_FILE}`);
+  logger.info(`电费监控 Web 服务已启动：http://localhost:${PORT}`);
+  logger.info(`使用日志文件：${LOG_FILE}`);
 });
