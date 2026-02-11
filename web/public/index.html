@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>电费监控看板</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        background: #0b1020;
+        color: #e5e7eb;
+      }
+      header {
+        padding: 16px 24px;
+        background: linear-gradient(90deg, #111827, #1f2937);
+        border-bottom: 1px solid #374151;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 20px;
+      }
+      header .meta {
+        font-size: 12px;
+        color: #9ca3af;
+      }
+      main {
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .card {
+        background: radial-gradient(circle at top left, #111827, #020617);
+        border-radius: 12px;
+        border: 1px solid #1f2937;
+        padding: 10px 12px;
+        box-shadow: 0 18px 25px rgba(0, 0, 0, 0.45);
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #e5e7eb;
+      }
+      .card-subtitle {
+        font-size: 12px;
+        color: #9ca3af;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        background: rgba(37, 99, 235, 0.12);
+        color: #bfdbfe;
+        border: 1px solid rgba(59, 130, 246, 0.6);
+      }
+      .chart {
+        width: 100%;
+        height: 200px;
+      }
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 4px;
+        align-items: stretch;
+      }
+      .chart-wrapper {
+        min-height: 0;
+      }
+      .chart-full {
+        grid-column: 1 / -1;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .stat {
+        padding: 8px 10px;
+        border-radius: 10px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid #1f2937;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: #9ca3af;
+      }
+      .stat-value {
+        margin-top: 4px;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .stat-hint {
+        margin-top: 2px;
+        font-size: 11px;
+        color: #6b7280;
+      }
+      .status-ok {
+        color: #4ade80;
+      }
+      .status-bad {
+        color: #f97373;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      thead {
+        background: rgba(15, 23, 42, 0.9);
+      }
+      th,
+      td {
+        padding: 6px 8px;
+        border-bottom: 1px solid #111827;
+        white-space: nowrap;
+      }
+      th {
+        text-align: left;
+        color: #9ca3af;
+        font-weight: 500;
+        position: sticky;
+        top: 0;
+        background: rgba(15, 23, 42, 0.98);
+        backdrop-filter: blur(10px);
+        z-index: 1;
+      }
+      tbody tr:nth-child(even) {
+        background: rgba(15, 23, 42, 0.7);
+      }
+      tbody tr:nth-child(odd) {
+        background: rgba(15, 23, 42, 0.4);
+      }
+      tbody tr:hover {
+        background: rgba(37, 99, 235, 0.18);
+      }
+      .table-container {
+        max-height: 360px;
+        overflow: auto;
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+      }
+      .pill {
+        padding: 2px 6px;
+        border-radius: 999px;
+        font-size: 11px;
+        display: inline-block;
+      }
+      .pill-ok {
+        background: rgba(22, 163, 74, 0.2);
+        color: #bbf7d0;
+      }
+      .pill-fail {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fecaca;
+      }
+      .footer {
+        padding: 8px 16px 14px;
+        font-size: 11px;
+        color: #6b7280;
+        text-align: right;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 6px rgba(34, 197, 94, 0.9);
+      }
+      .error-text {
+        font-size: 12px;
+        color: #f97373;
+        margin-top: 4px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>电费监控看板</h1>
+        <div class="meta">
+          实时解析 pm2 日志，展示剩余电量、电表读数、读取时间与状态。
+        </div>
+      </div>
+      <div class="meta">
+        <div class="badge">
+          <span class="dot"></span>
+          <span id="statusText">正在初始化...</span>
+        </div>
+        <div id="lastUpdate" style="margin-top: 2px"></div>
+        <div style="margin-top: 2px; font-size: 11px; color: #9ca3af">
+          每 <strong>30 秒</strong> 自动刷新一次。
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">趋势 · 剩余电量 & 电表读数</div>
+            <div class="card-subtitle">
+              横轴为日志时间，左轴为剩余电量，右轴为电表读数。
+            </div>
+          </div>
+          <span class="chip" id="pointCount"></span>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-label">当前剩余电量</div>
+            <div class="stat-value" id="currentBalance">--</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">当前电表读数</div>
+            <div class="stat-value" id="currentTotal">--</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-wrapper">
+            <div id="balanceChart" class="chart" style="height: 170px"></div>
+          </div>
+          <div class="chart-wrapper">
+            <div id="totalChart" class="chart" style="height: 170px"></div>
+          </div>
+          <div class="chart-wrapper chart-full">
+            <div class="card-subtitle" style="margin-top: 0">
+              每小时用电量（根据电表读数差值汇总）：
+            </div>
+            <div id="hourlyChart" class="chart" style="height: 150px"></div>
+          </div>
+        </div>
+
+        <div id="chartError" class="error-text" style="display: none"></div>
+        <div
+          id="hourlyChartError"
+          class="error-text"
+          style="display: none; margin-top: -6px"
+        ></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">明细 · 最近读取记录</div>
+            <div class="card-subtitle">
+              按时间倒序显示最近的读取数据和状态。
+            </div>
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>读取时间</th>
+                <th>剩余电量</th>
+                <th>电表读数</th>
+                <th>读取状态</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const statusTextEl = document.getElementById("statusText");
+      const lastUpdateEl = document.getElementById("lastUpdate");
+      const pointCountEl = document.getElementById("pointCount");
+      const currentBalanceEl = document.getElementById("currentBalance");
+      const currentTotalEl = document.getElementById("currentTotal");
+      const tableBodyEl = document.getElementById("tableBody");
+      const chartErrorEl = document.getElementById("chartError");
+
+      const balanceChartDom = document.getElementById("balanceChart");
+      const balanceChart = echarts.init(balanceChartDom);
+      const totalChartDom = document.getElementById("totalChart");
+      const totalChart = echarts.init(totalChartDom);
+      const hourlyChartDom = document.getElementById("hourlyChart");
+      const hourlyChart = hourlyChartDom ? echarts.init(hourlyChartDom) : null;
+      const hourlyChartErrorEl = document.getElementById("hourlyChartError");
+
+      function formatTimeStr(t) {
+        if (!t) return "--";
+        // 简单裁剪：只保留到分钟
+        return String(t).replace(/:([0-5]\d)(:\d{2})?$/, ":$1");
+      }
+
+      function formatNumber(n, digits = 2) {
+        if (n === null || n === undefined || Number.isNaN(Number(n))) {
+          return "--";
+        }
+        return Number(n).toFixed(digits);
+      }
+
+      // 解析时间字符串为时间戳（毫秒），支持：2026-02-11 18:02:01 / 2026/2/11 18:02
+      function parseDateTimeToMs(t) {
+        if (!t) return null;
+        const s = String(t).trim();
+        const m = s.match(
+          /^(\d{4})[/-](\d{1,2})[/-](\d{1,2})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?$/,
+        );
+        if (!m) return null;
+        const [, year, month, day, hour, minute, second] = m;
+        const yyyy = Number(year);
+        const mm = Number(month) - 1;
+        const dd = Number(day);
+        const hh = Number(hour);
+        const mi = Number(minute);
+        const ss = second ? Number(second) : 0;
+        const d = new Date(yyyy, mm, dd, hh, mi, ss);
+        const ts = d.getTime();
+        return Number.isNaN(ts) ? null : ts;
+      }
+
+      // 根据时间数组，返回最近 24 小时的起始索引（用于 dataZoom 默认选中）
+      function get24hStartIndex(times) {
+        if (!Array.isArray(times) || !times.length) return 0;
+        const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+        let startIndex = 0;
+        for (let i = 0; i < times.length; i++) {
+          const ts = parseDateTimeToMs(times[i]);
+          if (ts != null && ts >= cutoff) {
+            startIndex = i;
+            break;
+          }
+        }
+        return startIndex;
+      }
+
+      function updateStatus(ok, message) {
+        statusTextEl.textContent = message;
+        statusTextEl.style.color = ok ? "#bbf7d0" : "#fecaca";
+      }
+
+      function updateLastUpdate() {
+        const now = new Date();
+        const s = now.toLocaleString("zh-CN", {
+          hour12: false,
+        });
+        lastUpdateEl.textContent = "最近刷新：" + s;
+      }
+
+      function renderTable(data) {
+        tableBodyEl.innerHTML = "";
+        const reversed = [...data].reverse(); // 最近的在上方
+        for (const item of reversed) {
+          const tr = document.createElement("tr");
+          const statusOk = String(item.lastCommunicationStatus || "").includes(
+            "成功",
+          );
+
+          tr.innerHTML = `
+            <td>${formatTimeStr(item.lastCommunicationTime)}</td>
+            <td>${formatNumber(item.balance)}</td>
+            <td>${formatNumber(item.total)}</td>
+            <td>
+              <span class="pill ${
+                statusOk ? "pill-ok" : "pill-fail"
+              }">${item.lastCommunicationStatus || "--"}</span>
+            </td>
+          `;
+          tableBodyEl.appendChild(tr);
+        }
+      }
+
+      function renderSummary(latest, all) {
+        if (!latest) {
+          currentBalanceEl.textContent = "--";
+          currentTotalEl.textContent = "--";
+          return;
+        }
+
+        currentBalanceEl.textContent = formatNumber(latest.balance);
+        currentTotalEl.textContent = formatNumber(latest.total, 1);
+      }
+
+      function renderChart(data) {
+        if (!data.length) {
+          balanceChart.clear();
+          totalChart.clear();
+          chartErrorEl.style.display = "block";
+          chartErrorEl.textContent = "暂无数据，请稍后再试。";
+          return;
+        }
+
+        chartErrorEl.style.display = "none";
+
+        const times = data.map((d) => d.lastCommunicationTime);
+        const balances = data.map((d) => d.balance);
+        const totals = data.map((d) => d.total);
+        const xAxisData = times.map((t) => formatTimeStr(t));
+        const startIndex = get24hStartIndex(times);
+
+        const commonGrid = {
+          left: "6%",
+          right: "6%",
+          top: 30,
+          bottom: 24,
+          containLabel: true,
+        };
+
+        const balanceOption = {
+          animation: true,
+          tooltip: {
+            trigger: "axis",
+            axisPointer: {
+              type: "cross",
+              label: {
+                backgroundColor: "#1f2937",
+              },
+            },
+            valueFormatter: (value) => formatNumber(value, 2),
+          },
+          grid: commonGrid,
+          xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: xAxisData,
+            axisLabel: {
+              color: "#9ca3af",
+              fontSize: 10,
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#374151",
+              },
+            },
+          },
+          yAxis: {
+            type: "value",
+            name: "剩余电量",
+            axisLabel: {
+              color: "#9ca3af",
+              fontSize: 10,
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#4b5563",
+              },
+            },
+            splitLine: {
+              lineStyle: {
+                color: "rgba(55,65,81,0.5)",
+              },
+            },
+          },
+          dataZoom: [
+            {
+              type: "inside",
+              xAxisIndex: 0,
+              filterMode: "none",
+              startValue: startIndex,
+            },
+            {
+              type: "slider",
+              xAxisIndex: 0,
+              height: 14,
+              bottom: 2,
+
+              startValue: startIndex,
+            },
+          ],
+          series: [
+            {
+              name: "剩余电量",
+              type: "line",
+              data: balances,
+              smooth: true,
+              showSymbol: false,
+              lineStyle: {
+                color: "#60a5fa",
+                width: 2,
+              },
+              areaStyle: {
+                color: "rgba(96,165,250,0.25)",
+              },
+            },
+          ],
+        };
+
+        const totalOption = {
+          animation: true,
+          tooltip: {
+            trigger: "axis",
+            axisPointer: {
+              type: "cross",
+              label: {
+                backgroundColor: "#1f2937",
+              },
+            },
+            valueFormatter: (value) => formatNumber(value, 1),
+          },
+          grid: commonGrid,
+          xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: xAxisData,
+            axisLabel: {
+              color: "#9ca3af",
+              fontSize: 10,
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#374151",
+              },
+            },
+          },
+          yAxis: {
+            type: "value",
+            name: "电表读数",
+            axisLabel: {
+              color: "#9ca3af",
+              fontSize: 10,
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#4b5563",
+              },
+            },
+            splitLine: {
+              lineStyle: {
+                color: "rgba(55,65,81,0.5)",
+              },
+            },
+          },
+          dataZoom: [
+            {
+              type: "inside",
+              xAxisIndex: 0,
+              filterMode: "none",
+              startValue: startIndex,
+            },
+            {
+              type: "slider",
+              xAxisIndex: 0,
+              height: 14,
+              bottom: 2,
+
+              startValue: startIndex,
+            },
+          ],
+          series: [
+            {
+              name: "电表读数",
+              type: "line",
+              data: totals,
+              smooth: true,
+              showSymbol: false,
+              lineStyle: {
+                color: "#facc15",
+                width: 2,
+              },
+              areaStyle: {
+                color: "rgba(250,204,21,0.07)",
+              },
+            },
+          ],
+        };
+
+        balanceChart.setOption(balanceOption);
+        totalChart.setOption(totalOption);
+      }
+
+      function renderHourlyChart(data) {
+        if (!hourlyChart) return;
+
+        if (!data.length) {
+          hourlyChart.clear();
+          if (hourlyChartErrorEl) {
+            hourlyChartErrorEl.style.display = "block";
+            hourlyChartErrorEl.textContent = "暂无可计算的每小时用电量数据。";
+          }
+          return;
+        }
+
+        // 后端已使用 dayjs 计算好“每小时用电量”，前端只负责展示
+        const rawTimes = [];
+        const values = [];
+
+        for (const item of data) {
+          if (
+            item.hourlyUsage == null ||
+            Number.isNaN(Number(item.hourlyUsage))
+          ) {
+            continue;
+          }
+          const labelSource = item.lastCommunicationTime;
+          rawTimes.push(labelSource);
+          values.push(Number(item.hourlyUsage));
+        }
+
+        if (!values.length) {
+          hourlyChart.clear();
+          if (hourlyChartErrorEl) {
+            hourlyChartErrorEl.style.display = "block";
+            hourlyChartErrorEl.textContent = "暂无可计算的每小时用电量数据。";
+          }
+          return;
+        }
+
+        if (hourlyChartErrorEl) {
+          hourlyChartErrorEl.style.display = "none";
+        }
+
+        const xAxisData = rawTimes.map((t) => formatTimeStr(t));
+        const startIndex = get24hStartIndex(rawTimes);
+
+        const option = {
+          animation: true,
+          tooltip: {
+            trigger: "axis",
+            axisPointer: {
+              type: "cross",
+              label: {
+                backgroundColor: "#1f2937",
+              },
+            },
+            valueFormatter: (value) =>
+              value == null ? "--" : `${formatNumber(value, 3)} kWh`,
+          },
+          grid: {
+            left: "6%",
+            right: "6%",
+            top: 30,
+            bottom: 24,
+            containLabel: true,
+          },
+          xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: xAxisData,
+            axisLabel: {
+              color: "#9ca3af",
+              fontSize: 10,
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#374151",
+              },
+            },
+          },
+          yAxis: {
+            type: "value",
+            name: "每小时用电量",
+            axisLabel: {
+              color: "#9ca3af",
+              fontSize: 10,
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#4b5563",
+              },
+            },
+            splitLine: {
+              lineStyle: {
+                color: "rgba(55,65,81,0.5)",
+              },
+            },
+          },
+          dataZoom: [
+            {
+              type: "inside",
+              xAxisIndex: 0,
+              filterMode: "none",
+              startValue: startIndex,
+            },
+            {
+              type: "slider",
+              xAxisIndex: 0,
+              height: 14,
+              bottom: 2,
+              startValue: startIndex,
+            },
+          ],
+          series: [
+            {
+              name: "每小时用电量",
+              type: "line",
+              data: values,
+              smooth: true,
+              showSymbol: false,
+              lineStyle: {
+                color: "#34d399",
+                width: 2,
+              },
+              areaStyle: {
+                color: "rgba(52,211,153,0.18)",
+              },
+            },
+          ],
+        };
+
+        hourlyChart.setOption(option);
+      }
+
+      async function fetchData() {
+        try {
+          updateStatus(true, "正在请求数据...");
+          const resp = await fetch("/api/data");
+          const json = await resp.json();
+          if (!json.success) {
+            updateStatus(false, json.message || "接口返回错误");
+            chartErrorEl.style.display = "block";
+            chartErrorEl.textContent = json.message || "接口返回错误";
+            return;
+          }
+
+          const data = json.data || [];
+          pointCountEl.textContent = data.length
+            ? `数据点：${data.length} 条`
+            : "暂无数据";
+
+          if (!data.length) {
+            updateStatus(false, "暂无数据，等待新的日志记录...");
+            renderChart([]);
+            renderHourlyChart([]);
+            renderTable([]);
+            renderSummary(null, []);
+            return;
+          }
+
+          const latest = data[data.length - 1];
+
+          renderChart(data);
+          renderHourlyChart(data);
+          renderTable(data);
+          renderSummary(latest, data);
+          updateStatus(true, "数据已更新");
+          updateLastUpdate();
+        } catch (err) {
+          console.error(err);
+          updateStatus(false, "请求失败，请检查服务或网络");
+          chartErrorEl.style.display = "block";
+          chartErrorEl.textContent = "请求失败，请检查服务是否已启动。";
+        }
+      }
+
+      fetchData();
+      setInterval(fetchData, 30000);
+
+      window.addEventListener("resize", () => {
+        balanceChart.resize();
+        totalChart.resize();
+        if (hourlyChart) {
+          hourlyChart.resize();
+        }
+      });
+    </script>
+  </body>
+</html>

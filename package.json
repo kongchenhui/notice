@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "web": "node web/server.js"
   },
   "dependencies": {
     "axios": "^1.13.4",
     "dayjs": "^1.11.19",
+    "express": "^5.2.1",
     "node-schedule": "^2.1.0",
     "nodemailer": "^8.0.1"
   }
