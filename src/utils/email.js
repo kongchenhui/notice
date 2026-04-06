@@ -8,7 +8,7 @@ const config = {
     // 发件人邮箱账号
     user: "2604254084@qq.com",
     // 发件人邮箱的授权码（请确保在真实环境中使用安全的方式管理）
-    pass: "rzzpeljpiripdjeg",
+    pass: "qtzlqmcnydixdhhj",
   },
 };
 
