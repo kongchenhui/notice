@@ -50,11 +50,26 @@ async function run() {
     ].join("|");
     logger.info(`获取到电费信息：${info}`);
 
+    const db = getDb();
+
+    // 去重：如果已有相同通讯时间的记录，跳过插入
+    const existing = db
+      .prepare(
+        "SELECT id FROM electricity_records WHERE last_communication_time = @time AND last_communication_status = @status LIMIT 1",
+      )
+      .get({
+        time: data.lastCommunicationTime,
+        status: data.lastCommunicationStatus,
+      });
+    if (existing) {
+      logger.info("该通讯时间的数据已存在，跳过重复插入");
+      return;
+    }
+
     // 计算每小时用电量
     const hourlyUsage = computeHourlyUsage(data);
 
     // 存入数据库
-    const db = getDb();
     db.prepare(
       `INSERT INTO electricity_records (balance, total, last_communication_time, last_communication_status, hourly_usage)
        VALUES (@balance, @total, @lastCommunicationTime, @lastCommunicationStatus, @hourlyUsage)`,

@@ -14,12 +14,13 @@ router.get("/data", (req, res) => {
     const days = parseInt(req.query.days) || 0;
     const limit = parseInt(req.query.limit) || 0;
 
-    let sql = "SELECT * FROM electricity_records";
+    let sql =
+      "SELECT * FROM electricity_records WHERE id IN (SELECT MAX(id) FROM electricity_records GROUP BY last_communication_time, last_communication_status)";
     const params = {};
 
     if (days > 0) {
       sql +=
-        " WHERE created_at >= datetime('now', 'localtime', @daysOffset)";
+        " AND created_at >= datetime('now', 'localtime', @daysOffset)";
       params.daysOffset = `-${days} days`;
     }
 
