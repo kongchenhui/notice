@@ -89,13 +89,14 @@ async function run() {
 }
 
 /**
- * 启动定时任务（每分钟第15秒执行）
+ * 启动定时任务（每小时第15分钟执行）
  */
 export function startScheduler() {
+  // node-schedule 5字段 cron：minute hour dayOfMonth month dayOfWeek
   schedule.scheduleJob("15 * * * *", () => {
     run();
   });
-  logger.info("定时任务已启动（每分钟第15秒执行）");
+  logger.info("定时任务已启动（每小时第15分钟执行）");
 }
 
 /**
