@@ -26,26 +26,11 @@ export function runMigrations() {
       ON electricity_records(last_communication_time);
   `);
 
-  // 清理历史重复数据：按通讯时间分组，只保留最新一条
-  const dupCount = db.prepare(`
-    DELETE FROM electricity_records WHERE id NOT IN (
-      SELECT MAX(id) FROM electricity_records
-      GROUP BY last_communication_time, last_communication_status
-    )
-  `).run().changes;
-  if (dupCount > 0) {
-    logger.info(`已清理 ${dupCount} 条重复电费记录`);
-  }
-
-  // 唯一索引：防止同一通讯时间重复插入（双重保障）
-  try {
-    db.exec(`
-      CREATE UNIQUE INDEX IF NOT EXISTS idx_records_comm_time_unique
-        ON electricity_records(last_communication_time, last_communication_status);
-    `);
-  } catch {
-    // 如果索引已存在则忽略
-  }
+  // 唯一索引：防止同一通讯时间重复插入
+  db.exec(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_records_comm_time_unique
+      ON electricity_records(last_communication_time, last_communication_status);
+  `);
 
   // 通知记录表：替代 notice-timestamp.json
   db.exec(`

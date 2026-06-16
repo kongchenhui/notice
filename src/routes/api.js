@@ -14,8 +14,7 @@ router.get("/data", (req, res) => {
     const days = parseInt(req.query.days) || 0;
     const limit = parseInt(req.query.limit) || 0;
 
-    let sql =
-      "SELECT * FROM electricity_records WHERE id IN (SELECT MAX(id) FROM electricity_records GROUP BY last_communication_time, last_communication_status)";
+    let sql = "SELECT * FROM electricity_records WHERE 1=1";
     const params = {};
 
     if (days > 0) {
