@@ -1,3 +1,4 @@
+// 学校电费系统固定的 POST 表单数据
 const STATIC_BODY_DATA = {
   __VIEWSTATE:
     "/wEPDwUKLTYxODAyNDk3NQ9kFgICAw9kFgYCAQ8QDxYGHg1EYXRhVGV4dEZpZWxkBQdsb3VOYW1lHg5EYXRhVmFsdWVGaWVsZAUHbG91TmFtZR4LXyFEYXRhQm91bmRnZBAVAwcyMTIjKDUpBzIxNyMoMSkHMjE4IygyKRUDBzIxMiMoNSkHMjE3IygxKQcyMTgjKDIpFCsDA2dnZ2RkAgcPPCsACgBkAgkPPCsAEQIBEBYAFgAWAAwUKwAAZBgCBQ55b25naHVHcmlkVmlldw9nZAUQeW9uZ2RpYW5Gb3JtVmlldw9nZOb7IqDk1/Mx+JJCskVC7LnYe8CX+ToJIf+XEQiakunw",
@@ -10,10 +11,12 @@ const STATIC_BODY_DATA = {
 };
 
 /**
- * 获取当前剩余电费
+ * 从学校电费系统获取当前电费信息
+ * @returns {Promise<{balance: number, total: number, lastCommunicationTime: string, lastCommunicationStatus: string}>}
  */
 export async function getBalance() {
   const { promise, resolve, reject } = Promise.withResolvers();
+
   fetch("http://wuxishengangtiandi.wxjihisea.cn/A0SuZhou/DefaultSuZhou.aspx", {
     headers: {
       "content-type": "application/x-www-form-urlencoded",
@@ -23,15 +26,19 @@ export async function getBalance() {
   })
     .then((resp) => resp.text())
     .then((text) => {
+      // 正则匹配：购电剩余
       const m = text.match(
         /<td[^>]*>\s*购电剩余\s*<\/td>\s*<td[^>]*>\s*([-+]?\d+(?:\.\d+)?)\s*<\/td>/i,
       );
+      // 正则匹配：表字（总电表读数）
       const m2 = text.match(
         /<td[^>]*>\s*表字\s*<\/td>\s*<td[^>]*>\s*([-+]?\d+(?:\.\d+)?)\s*<\/td>/i,
       );
+      // 正则匹配：上次通讯时间
       const m3 = text.match(
         /<td[^>]*>\s*上次通讯时间\s*<\/td>\s*<td[^>]*>\s*([^<]+?)\s*<\/td>/i,
       );
+      // 正则匹配：上次通信状态
       const m4 = text.match(
         /<td[^>]*>\s*上次通信状态\s*<\/td>\s*<td[^>]*>\s*([^<]+?)\s*<\/td>/i,
       );
@@ -48,5 +55,6 @@ export async function getBalance() {
       });
     })
     .catch(reject);
+
   return promise;
 }
