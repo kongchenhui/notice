@@ -6,7 +6,7 @@ const router = Router();
 
 /**
  * GET /api/data
- * 获取电费记录列表，支持 ?days=N 和 ?limit=N 参数
+ * 获取用电记录列表，支持 ?days=N 和 ?limit=N 参数
  */
 router.get("/data", (req, res) => {
   try {
@@ -34,7 +34,7 @@ router.get("/data", (req, res) => {
 
     res.json({ success: true, data: records });
   } catch (err) {
-    logger.error("查询电费数据失败：", err);
+    logger.error("查询用电数据失败：", err);
     res.status(500).json({
       success: false,
       message: err instanceof Error ? err.message : String(err),

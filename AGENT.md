@@ -1,11 +1,11 @@
-# AGENT.md — 电费监控系统（notice）
+# AGENT.md — 荷玛诗国际花园用电充值系统（notice）
 
 ## 项目概览
 
-电费监控系统 v2.0：定时抓取电表余额与用电数据，余额低于阈值时通过邮件发送预警通知，前端实时展示余额趋势、用电统计与通知历史。
+荷玛诗国际花园用电充值系统 v2.0：定时抓取电表余额与用电数据，余额低于阈值时通过邮件发送预警通知，前端实时展示余额趋势、用电统计与通知历史。
 
 - 后端：`src/`（Express 5 API、better-sqlite3 存储、node-schedule 定时抓取、nodemailer 邮件）
-- 前端：`frontend/`（Vue 3 + Vite + ECharts）
+- 前端：`frontend/`（Vue 3 + Vite + ECharts + vue-i18n）
 - 入口：`index.js`；环境变量见 `.env.example`
 
 ## 常用命令

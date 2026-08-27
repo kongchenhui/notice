@@ -1,6 +1,7 @@
 {
   "name": "notice",
   "version": "2.0.0",
+  "description": "荷玛诗国际花园用电充值系统监控：定时抓取电表余额与用电数据，余额低于阈值邮件预警，前端实时看板（中英双语、三档主题）",
   "type": "module",
   "scripts": {
     "start": "node index.js",

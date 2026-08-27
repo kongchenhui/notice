@@ -1,11 +1,11 @@
 // 简体中文（默认语言，fallbackLocale）
 export default {
   app: {
-    title: "电费监控看板",
-    footer: "电费监控系统 v2.0",
+    title: "荷玛诗国际花园 · 用电充值监控",
+    footer: "荷玛诗国际花园用电充值系统 v2.0",
   },
   header: {
-    tagline: "实时获取电费数据，展示剩余电量、电表读数、读取时间与状态。",
+    tagline: "实时获取用电数据，展示剩余电量、电表读数、读取时间与状态。",
     status: {
       loading: "正在请求数据...",
       error: "请求失败",
@@ -43,7 +43,7 @@ export default {
     },
     subtitle: {
       records: "按时间倒序显示最近的读取数据和状态。",
-      notices: "查看系统发送的电费余额预警通知。",
+      notices: "查看系统发送的余额预警通知。",
     },
     records: "明细记录",
     notices: "通知历史",

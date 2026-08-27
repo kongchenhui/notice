@@ -1,4 +1,4 @@
-// 学校电费系统固定的 POST 表单数据
+// 荷玛诗国际花园用电充值系统（电表门户）固定的 POST 表单数据
 const STATIC_BODY_DATA = {
   __VIEWSTATE:
     "/wEPDwUKLTYxODAyNDk3NQ9kFgICAw9kFgYCAQ8QDxYGHg1EYXRhVGV4dEZpZWxkBQdsb3VOYW1lHg5EYXRhVmFsdWVGaWVsZAUHbG91TmFtZR4LXyFEYXRhQm91bmRnZBAVAwcyMTIjKDUpBzIxNyMoMSkHMjE4IygyKRUDBzIxMiMoNSkHMjE3IygxKQcyMTgjKDIpFCsDA2dnZ2RkAgcPPCsACgBkAgkPPCsAEQIBEBYAFgAWAAwUKwAAZBgCBQ55b25naHVHcmlkVmlldw9nZAUQeW9uZ2RpYW5Gb3JtVmlldw9nZOb7IqDk1/Mx+JJCskVC7LnYe8CX+ToJIf+XEQiakunw",
@@ -11,7 +11,7 @@ const STATIC_BODY_DATA = {
 };
 
 /**
- * 从学校电费系统获取当前电费信息
+ * 从荷玛诗国际花园用电充值系统获取当前用电信息
  * @returns {Promise<{balance: number, total: number, lastCommunicationTime: string, lastCommunicationStatus: string}>}
  */
 export async function getBalance() {

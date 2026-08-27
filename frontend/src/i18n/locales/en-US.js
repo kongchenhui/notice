@@ -1,8 +1,8 @@
 // English (US)
 export default {
   app: {
-    title: "Electricity Monitor",
-    footer: "Electricity Monitor v2.0",
+    title: "Hemaishi Intl. Garden · Recharge Monitor",
+    footer: "Hemaishi Intl. Garden Recharge System v2.0",
   },
   header: {
     tagline: "Live meter data: balance, reading, time & status.",
@@ -43,7 +43,7 @@ export default {
     },
     subtitle: {
       records: "Recent readings and status, newest first.",
-      notices: "Past electricity balance alert notifications.",
+      notices: "Past balance alert notifications.",
     },
     records: "Records",
     notices: "Notice History",

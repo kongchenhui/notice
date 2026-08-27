@@ -25,7 +25,7 @@ export function useApi() {
       ]);
 
       if (dataRes.success) records.value = dataRes.data;
-      else throw new Error(dataRes.message || "获取电费数据失败");
+      else throw new Error(dataRes.message || "获取用电数据失败");
 
       if (noticesRes.success) notices.value = noticesRes.data;
 
