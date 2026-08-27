@@ -32,7 +32,7 @@ function formatNumber(n, digits = 2) {
       </thead>
       <tbody>
         <tr v-if="!reversed.length">
-          <td colspan="4" style="text-align: center; color: #6b7280; padding: 20px">
+          <td colspan="4" class="empty-text" style="text-align: center; padding: 20px">
             暂无数据
           </td>
         </tr>

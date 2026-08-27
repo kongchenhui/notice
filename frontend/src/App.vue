@@ -85,6 +85,6 @@ const activeTab = ref("records");
   </main>
 
   <div class="footer">
-    电费监控系统 v2.0 · SQLite + Vue 3
+    电费监控系统 v2.0
   </div>
 </template>

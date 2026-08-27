@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,16 +5,14 @@ import fs from "node:fs";
 import { config } from "./src/config.js";
 import { logger } from "./src/logger.js";
 import { initDatabase } from "./src/db/connection.js";
-import { runMigrations } from "./src/db/schema.js";
 import { startScheduler, runOnce } from "./src/services/scheduler.js";
 import apiRouter from "./src/routes/api.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 1. 初始化数据库
+// 1. 初始化数据库（含建表）
 initDatabase();
-runMigrations();
 
 // 2. 创建 Express 应用
 const app = express();

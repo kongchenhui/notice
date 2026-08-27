@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import * as echarts from "echarts";
+import { useChartTheme } from "../composables/useChartTheme";
 
 const props = defineProps({
   data: { type: Array, default: () => [] },
@@ -8,6 +9,10 @@ const props = defineProps({
 
 const chartDom = ref(null);
 let chart = null;
+
+const { theme, colors } = useChartTheme();
+
+const FONT = "Pixelify Sans, 'Noto Sans SC', sans-serif";
 
 function formatTimeStr(t) {
   if (!t) return "--";
@@ -27,13 +32,14 @@ function parseDateTimeToMs(t) {
   );
   if (!m) return null;
   const [, year, month, day, hour, minute, second] = m;
-  const yyyy = Number(year);
-  const mm = Number(month) - 1;
-  const dd = Number(day);
-  const hh = Number(hour);
-  const mi = Number(minute);
-  const ss = second ? Number(second) : 0;
-  const d = new Date(yyyy, mm, dd, hh, mi, ss);
+  const d = new Date(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour),
+    Number(minute),
+    second ? Number(second) : 0,
+  );
   const ts = d.getTime();
   return Number.isNaN(ts) ? null : ts;
 }
@@ -52,64 +58,122 @@ function get24hStartIndex(times) {
   return startIndex;
 }
 
-function renderChart() {
-  if (!chart) return;
+function buildOption() {
+  const c = colors.value;
   const data = props.data || [];
-
-  if (!data.length) {
-    chart.clear();
-    return;
-  }
+  if (!data.length) return null;
 
   const times = data.map((d) => d.last_communication_time);
   const totals = data.map((d) => d.total);
   const xAxisData = times.map((t) => formatTimeStr(t));
   const startIndex = get24hStartIndex(times);
 
-  chart.setOption({
+  return {
     animation: true,
+    animationDuration: 300,
+    textStyle: { fontFamily: FONT },
     tooltip: {
       trigger: "axis",
-      axisPointer: { type: "cross", label: { backgroundColor: "#1f2937" } },
+      backgroundColor: c.tooltipBg,
+      borderColor: c.tooltipBorder,
+      borderWidth: 2,
+      padding: [6, 10],
+      extraCssText: "border-radius: 4px; box-shadow: 2px 2px 0 rgba(90, 70, 40, 0.3);",
+      textStyle: { color: c.tooltipText, fontFamily: FONT, fontSize: 14 },
+      axisPointer: {
+        type: "cross",
+        lineStyle: { color: c.axisLine, type: "dashed" },
+        label: {
+          backgroundColor: c.axisLine,
+          color: "#ffffff",
+          fontFamily: FONT,
+          fontSize: 12,
+        },
+      },
       valueFormatter: (value) => formatNumber(value, 1),
     },
-    grid: {
-      left: "6%",
-      right: "6%",
-      top: 30,
-      bottom: 24,
-      containLabel: true,
-    },
+    grid: { left: 48, right: 16, top: 32, bottom: 30, containLabel: true },
     xAxis: {
       type: "category",
       boundaryGap: false,
       data: xAxisData,
-      axisLabel: { color: "#9ca3af", fontSize: 10 },
-      axisLine: { lineStyle: { color: "#374151" } },
+      axisTick: { show: false },
+      axisLabel: { color: c.axisLabel, fontSize: 12, fontFamily: FONT },
+      axisLine: { lineStyle: { color: c.axisLine } },
     },
     yAxis: {
       type: "value",
       name: "电表读数",
-      axisLabel: { color: "#9ca3af", fontSize: 10 },
-      axisLine: { lineStyle: { color: "#4b5563" } },
-      splitLine: { lineStyle: { color: "rgba(55,65,81,0.5)" } },
+      nameTextStyle: { color: c.axisLabel, fontFamily: FONT, fontSize: 12 },
+      axisTick: { show: false },
+      axisLabel: { color: c.axisLabel, fontSize: 12, fontFamily: FONT },
+      axisLine: { show: false },
+      splitLine: { lineStyle: { color: c.grid, type: "dashed" } },
     },
     dataZoom: [
-      { type: "inside", xAxisIndex: 0, filterMode: "none", startValue: startIndex },
-      { type: "slider", xAxisIndex: 0, height: 14, bottom: 2, startValue: startIndex },
+      {
+        type: "inside",
+        xAxisIndex: 0,
+        filterMode: "none",
+        startValue: startIndex,
+      },
+      {
+        type: "slider",
+        xAxisIndex: 0,
+        height: 12,
+        bottom: 2,
+        startValue: startIndex,
+        borderColor: c.zoomBorder,
+        backgroundColor: c.zoomBg,
+        fillerColor: c.zoomFiller,
+        handleStyle: { color: c.axisLabel, borderColor: c.axisLabel },
+        // 隐藏中间"三个小竖线"的移动把手（moveHandleSize: 0），拖选区内侧平移 / 滚轮缩放仍可用
+        moveHandleSize: 0,
+        moveHandleStyle: { color: c.axisLabel },
+        // 手柄 hover 不高亮成默认蓝色，保持棕色系（emphasis.handleStyle 默认 #8FB0F7）
+        emphasis: {
+          handleStyle: { color: c.axisLabel, borderColor: c.axisLabel },
+        },
+        textStyle: { color: c.axisLabel, fontFamily: FONT, fontSize: 12 },
+        dataBackground: {
+          lineStyle: { color: c.axisLine, width: 1 },
+          areaStyle: { color: c.zoomFiller, opacity: 0.5 },
+        },
+        selectedDataBackground: {
+          lineStyle: { color: c.axisLine, width: 1 },
+          areaStyle: { color: c.zoomFiller, opacity: 0.9 },
+        },
+      },
     ],
     series: [
       {
         name: "电表读数",
         type: "line",
         data: totals,
-        smooth: true,
+        smooth: false, // 直角像素折线
         showSymbol: false,
-        lineStyle: { color: "#facc15", width: 2 },
-        areaStyle: { color: "rgba(250,204,21,0.07)" },
+        symbol: "rect", // 方块符号
+        symbolSize: 6,
+        lineStyle: { color: c.total, width: 2 },
+        areaStyle: { color: c.areaTotal },
+        emphasis: { focus: "series", lineStyle: { width: 3 } },
       },
     ],
-  });
+  };
+}
+
+function renderChart() {
+  if (!chart) return;
+  const opt = buildOption();
+  if (!opt) {
+    chart.clear();
+    return;
+  }
+  chart.setOption(opt);
+}
+
+function onResize() {
+  if (chart) chart.resize();
 }
 
 onMounted(() => {
@@ -117,24 +181,23 @@ onMounted(() => {
     chart = echarts.init(chartDom.value);
     renderChart();
   }
+  window.addEventListener("resize", onResize);
 });
 
 onUnmounted(() => {
+  window.removeEventListener("resize", onResize);
   if (chart) chart.dispose();
 });
 
 watch(() => props.data, renderChart, { deep: true });
 
-function onResize() {
-  if (chart) chart.resize();
-}
-onMounted(() => window.addEventListener("resize", onResize));
-onUnmounted(() => window.removeEventListener("resize", onResize));
+// 主题切换时同步换色（§7.7）
+watch(theme, renderChart);
 </script>
 
 <template>
   <div>
     <div class="card-subtitle" style="margin-bottom: 4px">电表读数趋势</div>
-    <div ref="chartDom" class="chart" style="height: 170px"></div>
+    <div ref="chartDom" class="chart" style="height: 176px"></div>
   </div>
 </template>

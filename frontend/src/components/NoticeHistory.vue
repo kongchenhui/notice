@@ -28,7 +28,7 @@ function formatNumber(n, digits = 2) {
       </thead>
       <tbody>
         <tr v-if="!data.length">
-          <td colspan="5" style="text-align: center; color: #6b7280; padding: 20px">
+          <td colspan="5" class="empty-text" style="text-align: center; padding: 20px">
             暂无通知记录
           </td>
         </tr>

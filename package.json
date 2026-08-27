@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "concurrently -n server,ui -c blue,green \"node index.js\" \"cd frontend && npm run dev\"",
-    "build": "cd frontend && npm run build",
-    "postinstall": "cd frontend && npm install"
+    "dev": "concurrently -n server,ui -c blue,green \"node index.js\" \"cd frontend && pnpm run dev\"",
+    "build": "cd frontend && pnpm run build",
+    "postinstall": "cd frontend && pnpm install"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
