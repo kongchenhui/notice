@@ -143,12 +143,8 @@
 
 **字体组合：Pixelify Sans（圆润像素，标题/数字）+ 系统中文（正文）**
 
-- **Pixelify Sans**（Google Fonts）：圆润、可读性好的像素字体，观感贴近星露谷 UI 的柔和像素数字与标题。
+- **Pixelify Sans**（本地自托管）：圆润、可读性好的像素字体，观感贴近星露谷 UI 的柔和像素数字与标题。官方**可变字体**（wght 轴 400–700）文件 `PixelifySans-VariableFont_wght.ttf` 存放在 `frontend/public/fonts/pixelify-sans/`（`OFL.txt` 许可证与 `README.txt` 随包存放），由 `frontend/src/styles/main.css` 顶部的单个 `@font-face`（`font-weight: 400 700`）加载，**不依赖 Google Fonts CDN**；如需其他字重/子集，请直接替换该目录下官方文件并保持 `@font-face` 一致。
 - **中文**：Pixelify Sans 不含中文字形，中文一律回退系统字体（`Noto Sans SC` / `Microsoft YaHei`），通过字号/字重/字距保持视觉统一；如项目引入开源中文像素字体（如 [Fusion Pixel 融合像素](https://github.com/TakWolf/fusion-pixel-font)），可将其置于中文回退链首位。
-
-```css
-@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap");
-```
 
 ```css
 --font-display: "Pixelify Sans", "Fusion Pixel 12px Proportional ZH Hans",

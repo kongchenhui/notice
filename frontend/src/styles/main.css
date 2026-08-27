@@ -4,6 +4,19 @@
    主题：<html data-theme="light|dark">，CSS 变量切换（§3.5），默认亮色
    ========================================================================== */
 
+/* ---------- 字体（§4，Pixelify Sans 本地自托管） ----------
+   官方可变字体（wght 轴 400–700）：
+   frontend/public/fonts/pixelify-sans/PixelifySans-VariableFont_wght.ttf
+   （OFL.txt 许可证随包存放，构建后由 dist/ 原样拷贝） */
+@font-face {
+  font-family: "Pixelify Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/pixelify-sans/PixelifySans-VariableFont_wght.ttf")
+    format("truetype");
+}
+
 /* ---------- 主题变量（§3.1 亮色默认 / §3.4 暗色） ---------- */
 :root {
   --pixel-size: 4px;
