@@ -1,6 +1,8 @@
 <script setup>
 import dayjs from "dayjs";
+import { useI18n } from "vue-i18n";
 import { useTheme } from "../composables/useTheme";
+import { setLocale, SUPPORTED_LOCALES } from "../i18n";
 
 defineProps({
   loading: Boolean,
@@ -11,11 +13,24 @@ defineProps({
 
 const emit = defineEmits(["refresh"]);
 
-const { theme, toggleTheme } = useTheme();
+const { t, locale } = useI18n();
+const { preference, setPreference } = useTheme();
+
+// 主题档位切换：亮色 / 暗色 / 跟随系统
+function onThemeChange(e) {
+  setPreference(e.target.value);
+}
 
 function formatTime(d) {
   if (!d) return "--";
   return dayjs(d).format("YYYY-MM-DD HH:mm:ss");
+}
+
+// 语言切换：在当前两种语言之间切换
+function switchLocale() {
+  const next =
+    locale.value === SUPPORTED_LOCALES[0] ? SUPPORTED_LOCALES[1] : SUPPORTED_LOCALES[0];
+  setLocale(next);
 }
 </script>
 
@@ -23,12 +38,12 @@ function formatTime(d) {
   <header>
     <div class="container">
       <div>
-        <h1>电费监控看板</h1>
+        <h1>{{ t("app.title") }}</h1>
         <div class="meta">
-          实时获取电费数据，展示剩余电量、电表读数、读取时间与状态。
+          {{ t("header.tagline") }}
         </div>
       </div>
-      <div class="meta" style="display: flex; align-items: center; gap: 10px;">
+      <div class="meta header-actions">
         <div>
           <div class="badge">
             <span
@@ -36,46 +51,60 @@ function formatTime(d) {
               :class="{ 'dot-bad': error }"
             ></span>
             <span id="statusText">
-              {{ loading ? "正在请求数据..." : error ? "请求失败" : "数据已更新" }}
+              {{
+                loading
+                  ? t("header.status.loading")
+                  : error
+                    ? t("header.status.error")
+                    : t("header.status.ok")
+              }}
             </span>
           </div>
           <div style="margin-top: 2px">
-            最近刷新：{{ formatTime(lastUpdate) }}
+            {{ t("header.lastUpdate", { time: formatTime(lastUpdate) }) }}
           </div>
         </div>
         <span class="chip" v-if="pointCount !== undefined">
-          数据点：{{ pointCount }} 条
+          {{ t("header.pointCount", { count: pointCount }) }}
         </span>
         <button class="btn-refresh" @click="emit('refresh')">
-          刷新
+          {{ t("header.refresh") }}
         </button>
         <button
-          class="btn-theme"
+          class="btn-lang"
           type="button"
-          :aria-label="theme === 'dark' ? '切换到亮色主题' : '切换到暗色主题'"
-          :title="theme === 'dark' ? '切换到亮色主题' : '切换到暗色主题'"
-          @click="toggleTheme"
+          :aria-label="
+            locale === 'zh-CN'
+              ? t('header.lang.aria.toEn')
+              : t('header.lang.aria.toZh')
+          "
+          :title="
+            locale === 'zh-CN'
+              ? t('header.lang.aria.toEn')
+              : t('header.lang.aria.toZh')
+          "
+          @click="switchLocale"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-            <!-- 暗色主题显示月亮（点击切亮色）；亮色主题显示太阳（点击切暗色） -->
-            <template v-if="theme === 'dark'">
-              <rect x="6" y="2" width="4" height="2" fill="currentColor" />
-              <rect x="4" y="4" width="4" height="2" fill="currentColor" />
-              <rect x="2" y="6" width="4" height="2" fill="currentColor" />
-              <rect x="2" y="8" width="4" height="2" fill="currentColor" />
-              <rect x="4" y="10" width="4" height="2" fill="currentColor" />
-              <rect x="6" y="12" width="4" height="2" fill="currentColor" />
-            </template>
-            <template v-else>
-              <rect x="6" y="6" width="4" height="4" fill="currentColor" />
-              <rect x="2" y="2" width="2" height="2" fill="currentColor" />
-              <rect x="12" y="2" width="2" height="2" fill="currentColor" />
-              <rect x="2" y="12" width="2" height="2" fill="currentColor" />
-              <rect x="12" y="12" width="2" height="2" fill="currentColor" />
-            </template>
-          </svg>
-          {{ theme === "dark" ? "亮色" : "暗色" }}
+          {{ locale === "zh-CN" ? t("header.lang.label.toEn") : t("header.lang.label.toZh") }}
         </button>
+        <label class="select-wrap" :title="t('header.theme.aria')">
+          <select
+            class="btn-theme"
+            :value="preference"
+            :aria-label="t('header.theme.aria')"
+            @change="onThemeChange"
+          >
+            <option value="light">{{ t("header.theme.options.light") }}</option>
+            <option value="dark">{{ t("header.theme.options.dark") }}</option>
+            <option value="system">{{ t("header.theme.options.system") }}</option>
+          </select>
+          <svg class="select-arrow" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <!-- 像素下箭头（下拉指示） -->
+            <rect x="6" y="2" width="4" height="2" fill="currentColor" />
+            <rect x="4" y="4" width="8" height="2" fill="currentColor" />
+            <rect x="2" y="6" width="12" height="2" fill="currentColor" />
+          </svg>
+        </label>
       </div>
     </div>
   </header>

@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from "vue-i18n";
 import { useApi } from "./composables/useApi.js";
 import DashboardHeader from "./components/DashboardHeader.vue";
 import StatsGrid from "./components/StatsGrid.vue";
@@ -9,6 +10,7 @@ import RecordsTable from "./components/RecordsTable.vue";
 import NoticeHistory from "./components/NoticeHistory.vue";
 import { ref } from "vue";
 
+const { t } = useI18n();
 const { records, notices, stats, loading, error, lastUpdate, refresh } = useApi();
 
 // Tab 切换：records / notices
@@ -38,7 +40,7 @@ const activeTab = ref("records");
         </div>
         <div class="chart-wrapper chart-full">
           <div class="card-subtitle" style="margin-top: 0">
-            每小时用电量（根据电表读数差值汇总）：
+            {{ t("charts.hourlySummary") }}
           </div>
           <HourlyUsageChart :data="records" />
         </div>
@@ -50,13 +52,17 @@ const activeTab = ref("records");
       <div class="card-header">
         <div>
           <div class="card-title">
-            {{ activeTab === "records" ? "明细 · 最近读取记录" : "通知 · 历史发送记录" }}
+            {{
+              activeTab === "records"
+                ? t("tabs.title.records")
+                : t("tabs.title.notices")
+            }}
           </div>
           <div class="card-subtitle">
             {{
               activeTab === "records"
-                ? "按时间倒序显示最近的读取数据和状态。"
-                : "查看系统发送的电费余额预警通知。"
+                ? t("tabs.subtitle.records")
+                : t("tabs.subtitle.notices")
             }}
           </div>
         </div>
@@ -68,14 +74,14 @@ const activeTab = ref("records");
           :class="{ active: activeTab === 'records' }"
           @click="activeTab = 'records'"
         >
-          明细记录
+          {{ t("tabs.records") }}
         </button>
         <button
           class="tab-btn"
           :class="{ active: activeTab === 'notices' }"
           @click="activeTab = 'notices'"
         >
-          通知历史
+          {{ t("tabs.notices") }}
         </button>
       </div>
 
@@ -85,6 +91,6 @@ const activeTab = ref("records");
   </main>
 
   <div class="footer">
-    电费监控系统 v2.0
+    {{ t("app.footer") }}
   </div>
 </template>

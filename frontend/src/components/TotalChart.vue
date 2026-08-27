@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import * as echarts from "echarts";
+import { useI18n } from "vue-i18n";
 import { useChartTheme } from "../composables/useChartTheme";
 
 const props = defineProps({
@@ -10,6 +11,7 @@ const props = defineProps({
 const chartDom = ref(null);
 let chart = null;
 
+const { t, locale } = useI18n();
 const { theme, colors } = useChartTheme();
 
 const FONT = "Pixelify Sans, 'Noto Sans SC', sans-serif";
@@ -103,7 +105,7 @@ function buildOption() {
     },
     yAxis: {
       type: "value",
-      name: "电表读数",
+      name: t("charts.total.axis"),
       nameTextStyle: { color: c.axisLabel, fontFamily: FONT, fontSize: 12 },
       axisTick: { show: false },
       axisLabel: { color: c.axisLabel, fontSize: 12, fontFamily: FONT },
@@ -147,7 +149,7 @@ function buildOption() {
     ],
     series: [
       {
-        name: "电表读数",
+        name: t("charts.total.series"),
         type: "line",
         data: totals,
         smooth: false, // 直角像素折线
@@ -193,11 +195,14 @@ watch(() => props.data, renderChart, { deep: true });
 
 // 主题切换时同步换色（§7.7）
 watch(theme, renderChart);
+
+// 语言切换时同步文案
+watch(locale, renderChart);
 </script>
 
 <template>
   <div>
-    <div class="card-subtitle" style="margin-bottom: 4px">电表读数趋势</div>
+    <div class="card-subtitle" style="margin-bottom: 4px">{{ t("charts.total.title") }}</div>
     <div ref="chartDom" class="chart" style="height: 176px"></div>
   </div>
 </template>

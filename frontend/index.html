@@ -12,7 +12,7 @@
     />
     <script>
       // 首屏前应用主题（与 src/composables/useTheme.js 保持一致），避免闪烁
-      // 默认亮色（星露谷主风格为明亮田园）
+      // 三档偏好：light | dark | system；system 或未设置时按系统偏好，兜底亮色
       (function () {
         var t = localStorage.getItem("theme");
         if (t !== "light" && t !== "dark") {
@@ -23,6 +23,17 @@
               : "light";
         }
         document.documentElement.dataset.theme = t;
+      })();
+      // 首屏前应用语言（与 src/i18n/index.js 保持一致），避免 <html lang> 闪烁
+      (function () {
+        var l = localStorage.getItem("locale");
+        if (l !== "zh-CN" && l !== "en-US") {
+          l =
+            (navigator.language || "zh-CN").toLowerCase().indexOf("zh") === 0
+              ? "zh-CN"
+              : "en-US";
+        }
+        document.documentElement.lang = l;
       })();
     </script>
   </head>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import * as echarts from "echarts";
+import { useI18n } from "vue-i18n";
 import { useChartTheme } from "../composables/useChartTheme";
 
 const props = defineProps({
@@ -10,6 +11,7 @@ const props = defineProps({
 const chartDom = ref(null);
 let chart = null;
 
+const { t, locale } = useI18n();
 const { theme, colors } = useChartTheme();
 
 const FONT = "Pixelify Sans, 'Noto Sans SC', sans-serif";
@@ -100,7 +102,7 @@ function buildOption() {
         },
       },
       valueFormatter: (value) =>
-        value == null ? "--" : `${formatNumber(value, 3)} kWh`,
+        value == null ? "--" : `${formatNumber(value, 3)} ${t("units.kwh")}`,
     },
     grid: { left: 48, right: 16, top: 32, bottom: 30, containLabel: true },
     xAxis: {
@@ -113,7 +115,7 @@ function buildOption() {
     },
     yAxis: {
       type: "value",
-      name: "每小时用电量",
+      name: t("charts.hourly.axis"),
       nameTextStyle: { color: c.axisLabel, fontFamily: FONT, fontSize: 12 },
       axisTick: { show: false },
       axisLabel: { color: c.axisLabel, fontSize: 12, fontFamily: FONT },
@@ -157,7 +159,7 @@ function buildOption() {
     ],
     series: [
       {
-        name: "每小时用电量",
+        name: t("charts.hourly.series"),
         type: "line",
         data: values,
         smooth: false, // 直角像素折线
@@ -203,6 +205,9 @@ watch(() => props.data, renderChart, { deep: true });
 
 // 主题切换时同步换色（§7.7）
 watch(theme, renderChart);
+
+// 语言切换时同步文案
+watch(locale, renderChart);
 </script>
 
 <template>

@@ -33,9 +33,10 @@ cd frontend && npm run dev   # 仅前端
    - 颜色只使用文档中定义的 token（组件内禁止写死色值，禁止新增色板外颜色）
    - 尺寸/间距/偏移对齐 4px 像素网格；布局按 §5（HUD 页面骨架、栅格断点、间距节奏）；卡片/按钮/表格/状态点按 §7 组件规范
    - 动效按 §8（快节奏、硬阴影、尊重 `prefers-reduced-motion`）；无障碍按 §9（对比度 ≥4.5:1、可见焦点、不单靠颜色）
-2. **亮暗主题**：使用 `data-theme` + CSS 变量方案（§3.5），**默认亮色**（星露谷主风格），手动选择持久化到 `localStorage`（key `theme`）；初始值 `localStorage` → `prefers-color-scheme` → `light`。ECharts 图表需随主题同步换色（§7.7），建议封装 `useTheme()` composable 统一管理。
-3. **新增样式元素**（颜色、字体、组件样式）前，先确认是否已在风格文档定义；未定义时先补充文档再实现，保持文档为唯一事实来源。
-4. 后端接口与数据层不涉及视觉样式；任何新组件需保证暗色（默认）与亮色主题下均可读。
+2. **主题三档**：使用 `data-theme` + CSS 变量方案（§3.5），三档偏好 `light` / `dark` / `system`（跟随系统），默认 `system`（按 `prefers-color-scheme`，兜底亮色）；选择持久化到 `localStorage`（key `theme`，值为三档之一）。生效主题由 `useTheme()` 的 computed `theme` 提供（`system` 已解析为 light/dark），页面 `<html data-theme>` 与 ECharts 图表配色（§7.7）均随生效主题同步。
+3. **前端国际化（i18n）**：使用 `vue-i18n`（composition 模式），支持 `zh-CN`（默认/回退）+ `en-US`；语言切换按钮在页头（`DashboardHeader`），复用按钮样式（§7.2）。文案一律写入 `frontend/src/i18n/locales/{zh-CN,en-US}.js`，组件内通过 `useI18n()` 的 `t()` 取用，禁止硬编码中文；语言初始值 `localStorage(locale)` → `navigator.language` → `zh-CN`，切换调用 `setLocale()`（见 `frontend/src/i18n/index.js`）并持久化。ECharts 图表内的轴名/系列名/单位等文案需 `watch(locale)` 重新 `setOption` 同步。
+4. **新增样式元素**（颜色、字体、组件样式）前，先确认是否已在风格文档定义；未定义时先补充文档再实现，保持文档为唯一事实来源。
+5. 后端接口与数据层不涉及视觉样式；任何新组件需保证暗色（默认）与亮色主题下均可读。
 
 ## 目录结构
 
@@ -48,6 +49,7 @@ frontend/
     App.vue             # 页面骨架（页头、统计、图表、明细/通知 Tab）
     components/         # DashboardHeader / StatsGrid / BalanceChart / TotalChart / HourlyUsageChart / RecordsTable / NoticeHistory
     composables/        # useApi（数据请求）
+    i18n/               # vue-i18n 配置与语言包（locales/zh-CN.js、locales/en-US.js）
     styles/main.css     # 全局样式（按风格文档改造）
 data/                   # SQLite 数据文件
 docs/                   # 设计文档（game-pixel-style.md 为 UI 规范来源）

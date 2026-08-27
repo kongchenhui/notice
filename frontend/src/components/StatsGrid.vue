@@ -1,5 +1,8 @@
 <script setup>
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps({
   stats: Object,
@@ -34,7 +37,7 @@ function fmt(n, digits = 2) {
 <template>
   <div class="stats-grid">
     <div class="stat">
-      <div class="stat-label">当前剩余电量</div>
+      <div class="stat-label">{{ t("stats.balance") }}</div>
       <div
         class="stat-value"
         :class="{
@@ -42,17 +45,21 @@ function fmt(n, digits = 2) {
           'status-ok': latest && latest.balance >= 20,
         }"
       >
-        {{ fmt(latest?.balance) }} 度
+        {{ fmt(latest?.balance) }} {{ t("units.balance") }}
       </div>
     </div>
     <div class="stat">
-      <div class="stat-label">当前电表读数</div>
+      <div class="stat-label">{{ t("stats.meter") }}</div>
       <div class="stat-value">{{ fmt(latest?.total, 1) }}</div>
     </div>
     <div class="stat">
-      <div class="stat-label">最近每小时用电量</div>
+      <div class="stat-label">{{ t("stats.hourly") }}</div>
       <div class="stat-value">
-        {{ latestHourlyUsage != null ? fmt(latestHourlyUsage, 3) + " kWh" : "--" }}
+        {{
+          latestHourlyUsage != null
+            ? fmt(latestHourlyUsage, 3) + " " + t("units.kwh")
+            : "--"
+        }}
       </div>
     </div>
   </div>

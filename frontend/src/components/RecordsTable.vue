@@ -1,5 +1,8 @@
 <script setup>
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps({
   data: { type: Array, default: () => [] },
@@ -24,16 +27,16 @@ function formatNumber(n, digits = 2) {
     <table>
       <thead>
         <tr>
-          <th>读取时间</th>
-          <th>剩余电量</th>
-          <th>电表读数</th>
-          <th>每小时用电量</th>
+          <th>{{ t("records.time") }}</th>
+          <th>{{ t("records.balance") }}</th>
+          <th>{{ t("records.meter") }}</th>
+          <th>{{ t("records.hourly") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="!reversed.length">
           <td colspan="4" class="empty-text" style="text-align: center; padding: 20px">
-            暂无数据
+            {{ t("records.empty") }}
           </td>
         </tr>
         <tr v-for="item in reversed" :key="item.id">
@@ -43,7 +46,7 @@ function formatNumber(n, digits = 2) {
           <td>
             {{
               item.hourly_usage != null
-                ? formatNumber(item.hourly_usage, 3) + " kWh"
+                ? formatNumber(item.hourly_usage, 3) + " " + t("units.kwh")
                 : "--"
             }}
           </td>

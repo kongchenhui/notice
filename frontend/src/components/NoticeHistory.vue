@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 defineProps({
   data: { type: Array, default: () => [] },
 });
@@ -19,22 +23,22 @@ function formatNumber(n, digits = 2) {
     <table>
       <thead>
         <tr>
-          <th>通知时间</th>
-          <th>剩余电量</th>
-          <th>电表读数</th>
-          <th>通讯时间</th>
-          <th>发送状态</th>
+          <th>{{ t("notices.time") }}</th>
+          <th>{{ t("notices.balance") }}</th>
+          <th>{{ t("notices.meter") }}</th>
+          <th>{{ t("notices.commTime") }}</th>
+          <th>{{ t("notices.status") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="!data.length">
           <td colspan="5" class="empty-text" style="text-align: center; padding: 20px">
-            暂无通知记录
+            {{ t("notices.empty") }}
           </td>
         </tr>
         <tr v-for="item in data" :key="item.id">
           <td>{{ formatTimeStr(item.created_at) }}</td>
-          <td>{{ formatNumber(item.balance) }} 度</td>
+          <td>{{ formatNumber(item.balance) }} {{ t("units.balance") }}</td>
           <td>{{ formatNumber(item.total) }}</td>
           <td>{{ formatTimeStr(item.last_communication_time) }}</td>
           <td>
@@ -43,7 +47,7 @@ function formatNumber(n, digits = 2) {
                 class="dot"
                 :class="{ 'dot-bad': !item.email_sent }"
               ></span>
-              {{ item.email_sent ? "成功" : "失败" }}
+              {{ item.email_sent ? t("notices.sent") : t("notices.failed") }}
             </span>
           </td>
         </tr>

@@ -120,8 +120,9 @@
 | 绿系正文 | `#A4CC74` | ≈8.4:1 ✅ |
 | 次级文字 | `#B8A583` | ≈6.4:1 ✅ |
 
-### 3.5 主题切换机制（Light / Dark Toggle）
+### 3.5 主题切换机制（Light / Dark / System 三档）
 
+- **三档偏好**：`light`（亮色）/ `dark`（暗色）/ `system`（跟随系统）；`system` 档实时解析 `prefers-color-scheme` 为实际 `light`/`dark`。
 - **切换方式**：`<html data-theme="light|dark">`，两套色板通过 CSS 变量切换，组件内一律引用变量、**禁止写死色值**：
 
 ```css
@@ -129,11 +130,10 @@
 [data-theme="dark"]        { /* §3.4 暗色色板 */ }
 ```
 
-- **默认亮色**：星露谷主风格是明亮田园，未选择时默认 `light`。
-- **持久化**：手动选择后写入 `localStorage`（key `theme`），刷新/重开保持。
-- **初始值优先级**：`localStorage` → `prefers-color-scheme` → 兜底 `light`。
-- **系统跟随**：用户未手动选择时，监听 `matchMedia('(prefers-color-scheme: dark)')` 变化实时跟随；一旦手动选择则以手动为准。
-- **Vue 实现建议**：封装 composable（如 `useTheme()`），暴露响应式 `theme` 与 `toggleTheme()`；在根组件挂载时初始化。
+- **默认跟随系统**：未选择时默认 `system`（按 `prefers-color-scheme`，兜底亮色；星露谷主风格是明亮田园，多数系统默认下即亮色）。
+- **持久化**：选择后写入 `localStorage`（key `theme`，值为 `light` | `dark` | `system`），刷新/重开保持。
+- **系统跟随**：`system` 档下监听 `matchMedia('(prefers-color-scheme: dark)')` 变化实时生效；手动选择 `light`/`dark` 后以手动为准。
+- **Vue 实现建议**：封装 composable（`useTheme()`），暴露响应式 `preference`（用户档位）、`theme`（生效主题，computed，`system` 已解析）与 `setPreference()`；生效主题变化自动同步 `<html data-theme>`，图表 `watch(theme)` 换色。
 - **切换动效**：像素风 → **即时切换**（0ms）；若需要过渡，用 100–150ms `steps()` 硬切，且 `prefers-reduced-motion: reduce` 时禁用。
 - **图表同步**：ECharts 不自动跟随 CSS 变量，主题切换后必须更新图表配色（见 §7.7）。
 
@@ -355,7 +355,7 @@
 - [ ] 图表不单靠颜色传达信息（线型/文字/图例兜底）
 - [ ] 所有尺寸、间距、偏移对齐 4px 网格；圆角 2–4px
 - [ ] 加载/刷新有可见反馈
-- [ ] 亮暗主题可切换：默认亮色、localStorage 持久化、跟随系统、图表同步换色
+- [ ] 主题三档可切换（亮色/暗色/跟随系统）：默认跟随系统、localStorage 持久化、system 档实时跟随、图表同步换色
 
 ---
 

@@ -147,6 +147,18 @@ header .meta {
   color: var(--color-muted-foreground);
 }
 
+/* 顶栏右侧控制区：状态 + 数据点 + 刷新/语言/主题按钮
+   - 单行放不下时允许内部换行（§5.3 移动端），换行后整组仍靠右（margin-left: auto）
+   - 相邻可点元素间距 ≥8px（§5.4） */
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+
 /* ---------- 主区域 / 页脚（§5.2 / §5.4） ---------- */
 main {
   width: 100%;
@@ -359,7 +371,8 @@ tbody tr:hover {
 
 /* ---------- 按钮（§7.2 木钮） ---------- */
 .btn-refresh,
-.btn-theme {
+.btn-theme,
+.btn-lang {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -382,24 +395,58 @@ tbody tr:hover {
 }
 
 .btn-refresh:hover,
-.btn-theme:hover {
+.btn-theme:hover,
+.btn-lang:hover {
   background: var(--color-btn-hover);
 }
 
 .btn-refresh:active,
-.btn-theme:active {
+.btn-theme:active,
+.btn-lang:active {
   transform: translate(2px, 2px);
   box-shadow: var(--shadow-hard-sm);
 }
 
-.btn-theme {
+.btn-theme,
+.btn-lang {
   gap: 6px;
   box-shadow: var(--shadow-btn);
 }
 
-.btn-theme:active {
+.btn-theme:active,
+.btn-lang:active {
   transform: translate(1px, 1px);
   box-shadow: var(--shadow-btn-sm);
+}
+
+/* 主题三档下拉（§7.2 木钮样式 + 像素箭头） */
+.select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+}
+
+.select-wrap select.btn-theme {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0 30px 0 14px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.select-wrap .select-arrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-foreground);
+}
+
+.select-wrap select.btn-theme:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
 }
 
 /* ---------- Tab（§7.5 金黄激活） ---------- */
