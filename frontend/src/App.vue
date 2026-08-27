@@ -22,7 +22,6 @@ const activeTab = ref("records");
     :loading="loading"
     :error="error"
     :lastUpdate="lastUpdate"
-    :pointCount="records.length"
     @refresh="refresh"
   />
 

@@ -172,6 +172,13 @@ header .meta {
   margin-left: auto;
 }
 
+/* 状态行（简约）：状态点 + "已更新 · HH:mm" */
+.status-line {
+  font-size: 14px;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+}
+
 /* ---------- 主区域 / 页脚（§5.2 / §5.4） ---------- */
 main {
   width: 100%;

@@ -1,18 +1,15 @@
 // 简体中文（默认语言，fallbackLocale）
 export default {
   app: {
-    title: "荷玛诗国际花园 · 用电充值监控",
-    footer: "荷玛诗国际花园用电充值系统 v2.0",
+    title: "荷玛诗湾",
+    footer: "荷玛诗湾用电充值系统 v2.0",
   },
   header: {
-    tagline: "实时获取用电数据，展示剩余电量、电表读数、读取时间与状态。",
     status: {
-      loading: "正在请求数据...",
+      loading: "更新中…",
       error: "请求失败",
-      ok: "数据已更新",
+      ok: "已更新",
     },
-    lastUpdate: "最近刷新：{time}",
-    pointCount: "数据点：{count} 条",
     refresh: "刷新",
     theme: {
       aria: "选择主题",

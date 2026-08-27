@@ -1,14 +1,14 @@
 <script setup>
 import dayjs from "dayjs";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "../composables/useTheme";
 import { setLocale, SUPPORTED_LOCALES } from "../i18n";
 
-defineProps({
+const props = defineProps({
   loading: Boolean,
   error: String,
   lastUpdate: Date,
-  pointCount: Number,
 });
 
 const emit = defineEmits(["refresh"]);
@@ -16,14 +16,24 @@ const emit = defineEmits(["refresh"]);
 const { t, locale } = useI18n();
 const { preference, setPreference } = useTheme();
 
+// 状态文案：更新中 / 请求失败 / 已更新
+const statusText = computed(() =>
+  props.loading
+    ? t("header.status.loading")
+    : props.error
+      ? t("header.status.error")
+      : t("header.status.ok"),
+);
+
+// 简约时间：仅时分（完整时间见明细表）
+function shortTime(d) {
+  if (!d) return "--";
+  return dayjs(d).format("HH:mm");
+}
+
 // 主题档位切换：亮色 / 暗色 / 跟随系统
 function onThemeChange(e) {
   setPreference(e.target.value);
-}
-
-function formatTime(d) {
-  if (!d) return "--";
-  return dayjs(d).format("YYYY-MM-DD HH:mm:ss");
 }
 
 // 语言切换：在当前两种语言之间切换
@@ -37,35 +47,11 @@ function switchLocale() {
 <template>
   <header>
     <div class="container">
-      <div>
-        <h1>{{ t("app.title") }}</h1>
-        <div class="meta">
-          {{ t("header.tagline") }}
-        </div>
-      </div>
+      <h1>{{ t("app.title") }}</h1>
       <div class="meta header-actions">
-        <div>
-          <div class="badge">
-            <span
-              class="dot"
-              :class="{ 'dot-bad': error }"
-            ></span>
-            <span id="statusText">
-              {{
-                loading
-                  ? t("header.status.loading")
-                  : error
-                    ? t("header.status.error")
-                    : t("header.status.ok")
-              }}
-            </span>
-          </div>
-          <div style="margin-top: 2px">
-            {{ t("header.lastUpdate", { time: formatTime(lastUpdate) }) }}
-          </div>
-        </div>
-        <span class="chip" v-if="pointCount !== undefined">
-          {{ t("header.pointCount", { count: pointCount }) }}
+        <span class="badge status-line">
+          <span class="dot" :class="{ 'dot-bad': error }"></span>
+          <span id="statusText">{{ statusText }} · {{ shortTime(lastUpdate) }}</span>
         </span>
         <button class="btn-refresh" @click="emit('refresh')">
           {{ t("header.refresh") }}

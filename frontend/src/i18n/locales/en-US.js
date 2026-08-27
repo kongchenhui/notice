@@ -1,18 +1,15 @@
 // English (US)
 export default {
   app: {
-    title: "Hemaishi Intl. Garden · Recharge Monitor",
-    footer: "Hemaishi Intl. Garden Recharge System v2.0",
+    title: "Hemaishi Bay",
+    footer: "Hemaishi Bay Recharge System v2.0",
   },
   header: {
-    tagline: "Live meter data: balance, reading, time & status.",
     status: {
-      loading: "Loading…",
-      error: "Failed",
+      loading: "Updating…",
+      error: "Request failed",
       ok: "Updated",
     },
-    lastUpdate: "Last refresh: {time}",
-    pointCount: "{count} point | {count} points",
     refresh: "Refresh",
     theme: {
       aria: "Select theme",

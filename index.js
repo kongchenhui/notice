@@ -38,7 +38,7 @@ if (fs.existsSync(distDir)) {
 // 5. 启动服务
 app.listen(config.port, () => {
   logger.info(`========================================`);
-  logger.info(`荷玛诗国际花园用电充值监控已启动：http://localhost:${config.port}`);
+  logger.info(`荷玛诗湾用电充值监控已启动：http://localhost:${config.port}`);
   logger.info(`API 接口：http://localhost:${config.port}/api/data`);
   logger.info(`运行模式：${config.isProduction ? "生产" : "开发"}`);
   logger.info(`========================================`);
