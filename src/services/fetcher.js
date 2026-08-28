@@ -1,4 +1,5 @@
 // 荷玛诗湾用电充值系统（电表门户）固定的 POST 表单数据
+import { normalizeCommTime } from "../utils/time.js";
 const STATIC_BODY_DATA = {
   __VIEWSTATE:
     "/wEPDwUKLTYxODAyNDk3NQ9kFgICAw9kFgYCAQ8QDxYGHg1EYXRhVGV4dEZpZWxkBQdsb3VOYW1lHg5EYXRhVmFsdWVGaWVsZAUHbG91TmFtZR4LXyFEYXRhQm91bmRnZBAVAwcyMTIjKDUpBzIxNyMoMSkHMjE4IygyKRUDBzIxMiMoNSkHMjE3IygxKQcyMTgjKDIpFCsDA2dnZ2RkAgcPPCsACgBkAgkPPCsAEQIBEBYAFgAWAAwUKwAAZBgCBQ55b25naHVHcmlkVmlldw9nZAUQeW9uZ2RpYW5Gb3JtVmlldw9nZOb7IqDk1/Mx+JJCskVC7LnYe8CX+ToJIf+XEQiakunw",
@@ -50,7 +51,8 @@ export async function getBalance() {
       resolve({
         balance: Number(m[1]),
         total: Number(m2[1]),
-        lastCommunicationTime: m3?.[1]?.trim() || "",
+        // 源头治理：统一规范化为补零格式，保证入库后 SQL 排序/去重可靠
+        lastCommunicationTime: normalizeCommTime(m3?.[1]?.trim() || ""),
         lastCommunicationStatus: m4?.[1]?.trim() || "",
       });
     })
