@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, watch } from "vue";
 import * as echarts from "echarts";
 import { useI18n } from "vue-i18n";
 import { useChartTheme } from "../composables/useChartTheme";
+import { useChartResize } from "../composables/useChartResize";
 
 const props = defineProps({
   data: { type: Array, default: () => [] },
@@ -13,6 +14,9 @@ let chart = null;
 
 const { t, locale } = useI18n();
 const { theme, colors } = useChartTheme();
+
+// 容器尺寸变化时自动重绘（ResizeObserver，覆盖移动端断点切换/旋转）
+useChartResize(() => chart, () => chartDom.value);
 
 const FONT = "Pixelify Sans, 'Noto Sans SC', sans-serif";
 
@@ -184,20 +188,14 @@ function renderChart() {
   chart.setOption(opt);
 }
 
-function onResize() {
-  if (chart) chart.resize();
-}
-
 onMounted(() => {
   if (chartDom.value) {
     chart = echarts.init(chartDom.value);
     renderChart();
   }
-  window.addEventListener("resize", onResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", onResize);
   if (chart) chart.dispose();
 });
 

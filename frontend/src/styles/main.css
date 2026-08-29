@@ -323,6 +323,7 @@ main {
 }
 
 .chart-wrapper {
+  min-width: 0; /* 允许 grid 项收缩到小于内容宽，避免 ECharts canvas 固定宽锚定容器造成横向溢出 */
   min-height: 0;
 }
 
