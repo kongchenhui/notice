@@ -528,6 +528,40 @@ tbody tr:hover {
   .charts-grid {
     grid-template-columns: 1fr;
   }
+
+  /* ---------- 顶栏移动端适配（§5.3 / §5.6） ---------- */
+  /* 压缩容器内边距，让标题 + 控件更紧凑 */
+  header .container {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  header h1 {
+    font-size: 16px;
+  }
+
+  /* 状态行：手机上隐藏更新时间，仅保留状态文案，
+     保证状态 + 刷新 + 语言 + 主题在一行内放下（不横向滚动） */
+  .status-time {
+    display: none;
+  }
+
+  /* 触控目标 ≥44px（§9 无障碍）：移动端按钮加高，间距保持 ≥8px */
+  .btn-refresh,
+  .btn-theme,
+  .btn-lang,
+  .select-wrap {
+    height: 44px;
+  }
+
+  .btn-refresh,
+  .btn-lang {
+    padding: 0 12px;
+  }
+
+  .select-wrap select.btn-theme {
+    padding: 0 30px 0 12px;
+  }
 }
 
 /* ---------- 动效开关（§8） ---------- */

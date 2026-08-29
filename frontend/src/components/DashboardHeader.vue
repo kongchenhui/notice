@@ -51,7 +51,8 @@ function switchLocale() {
       <div class="meta header-actions">
         <span class="badge status-line">
           <span class="dot" :class="{ 'dot-bad': error }"></span>
-          <span id="statusText">{{ statusText }} · {{ shortTime(lastUpdate) }}</span>
+          <span id="statusText">{{ statusText }}</span>
+          <span class="status-time" v-if="lastUpdate">· {{ shortTime(lastUpdate) }}</span>
         </span>
         <button class="btn-refresh" @click="emit('refresh')">
           {{ t("header.refresh") }}
