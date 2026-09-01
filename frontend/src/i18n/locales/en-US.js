@@ -5,11 +5,6 @@ export default {
     footer: "Electricity Monitoring System v2.0",
   },
   header: {
-    status: {
-      loading: "Updating…",
-      error: "Request failed",
-      ok: "Updated",
-    },
     refresh: "Refresh",
     theme: {
       aria: "Select theme",

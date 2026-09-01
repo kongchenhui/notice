@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
+import svgLoader from "vite-svg-loader";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -12,7 +13,7 @@ export default defineConfig(({ mode }) => {
   const apiPort = env.PORT || "30000";
 
   return {
-    plugins: [vue()],
+    plugins: [vue(), svgLoader()],
     build: {
       outDir: "../dist",
       emptyOutDir: true,

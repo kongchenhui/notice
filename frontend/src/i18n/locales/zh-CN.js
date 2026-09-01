@@ -5,11 +5,6 @@ export default {
     footer: "电费监控系统 v2.0",
   },
   header: {
-    status: {
-      loading: "更新中…",
-      error: "请求失败",
-      ok: "已更新",
-    },
     refresh: "刷新",
     theme: {
       aria: "选择主题",

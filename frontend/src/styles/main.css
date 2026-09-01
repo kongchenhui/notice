@@ -172,13 +172,6 @@ header .meta {
   margin-left: auto;
 }
 
-/* 状态行（简约）：状态点 + "已更新 · HH:mm" */
-.status-line {
-  font-size: 14px;
-  color: var(--color-muted-foreground);
-  white-space: nowrap;
-}
-
 /* ---------- 主区域 / 页脚（§5.2 / §5.4） ---------- */
 main {
   width: 100%;
@@ -398,7 +391,7 @@ tbody tr:hover {
   align-items: center;
   gap: 8px;
   height: 32px;
-  padding: 0 14px;
+  padding: 0 7px;
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
@@ -428,46 +421,25 @@ tbody tr:hover {
   box-shadow: var(--shadow-hard-sm);
 }
 
-.btn-theme,
-.btn-lang {
-  gap: 6px;
-  box-shadow: var(--shadow-btn);
+/* 图标按钮：18px 线性 SVG 图标，随按钮前景色 */
+.btn-refresh .icon,
+.btn-theme .icon,
+.btn-lang .icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
-.btn-theme:active,
-.btn-lang:active {
-  transform: translate(1px, 1px);
-  box-shadow: var(--shadow-btn-sm);
+/* 刷新按钮：加载中图标平滑旋转（§8；reduced-motion 全局禁用） */
+.btn-refresh .icon.spinning {
+  animation: icon-spin 800ms linear infinite;
 }
 
-/* 主题三档下拉（§7.2 木钮样式 + 像素箭头） */
-.select-wrap {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  height: 32px;
-}
-
-.select-wrap select.btn-theme {
-  appearance: none;
-  -webkit-appearance: none;
-  padding: 0 30px 0 14px;
-  cursor: pointer;
-  text-align: center;
-}
-
-.select-wrap .select-arrow {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: var(--color-foreground);
-}
-
-.select-wrap select.btn-theme:focus-visible {
-  outline: 2px solid var(--color-ring);
-  outline-offset: 2px;
+@keyframes icon-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---------- Tab（§7.5 金黄激活） ---------- */
@@ -541,27 +513,18 @@ tbody tr:hover {
     font-size: 16px;
   }
 
-  /* 状态行：手机上隐藏更新时间，仅保留状态文案，
-     保证状态 + 刷新 + 语言 + 主题在一行内放下（不横向滚动） */
-  .status-time {
-    display: none;
-  }
-
   /* 触控目标 ≥44px（§9 无障碍）：移动端按钮加高，间距保持 ≥8px */
   .btn-refresh,
   .btn-theme,
-  .btn-lang,
-  .select-wrap {
+  .btn-lang {
     height: 44px;
   }
 
+  /* 图标按钮移动端保持方形 44×44 触控目标 */
   .btn-refresh,
+  .btn-theme,
   .btn-lang {
-    padding: 0 12px;
-  }
-
-  .select-wrap select.btn-theme {
-    padding: 0 30px 0 12px;
+    padding: 0 13px;
   }
 }
 

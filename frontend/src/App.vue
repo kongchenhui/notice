@@ -11,19 +11,14 @@ import NoticeHistory from "./components/NoticeHistory.vue";
 import { ref } from "vue";
 
 const { t } = useI18n();
-const { records, notices, stats, loading, error, lastUpdate, refresh } = useApi();
+const { records, notices, stats, loading, refresh } = useApi();
 
 // Tab 切换：records / notices
 const activeTab = ref("records");
 </script>
 
 <template>
-  <DashboardHeader
-    :loading="loading"
-    :error="error"
-    :lastUpdate="lastUpdate"
-    @refresh="refresh"
-  />
+  <DashboardHeader :loading="loading" @refresh="refresh" />
 
   <main>
     <!-- 趋势卡片 -->
