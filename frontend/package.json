@@ -1,7 +1,7 @@
 {
   "name": "notice-frontend",
   "private": true,
-  "description": "荷玛诗湾用电充值监控前端（Vue 3 + Vite + ECharts + vue-i18n）",
+  "description": "电费监控系统前端（Vue 3 + Vite + ECharts + vue-i18n）",
   "type": "module",
   "scripts": {
     "dev": "vite",

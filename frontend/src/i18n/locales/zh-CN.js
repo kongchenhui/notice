@@ -1,8 +1,8 @@
 // 简体中文（默认语言，fallbackLocale）
 export default {
   app: {
-    title: "荷玛诗湾",
-    footer: "荷玛诗湾用电充值系统 v2.0",
+    title: "电费监控系统",
+    footer: "电费监控系统 v2.0",
   },
   header: {
     status: {

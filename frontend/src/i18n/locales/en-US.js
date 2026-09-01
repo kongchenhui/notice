@@ -1,8 +1,8 @@
 // English (US)
 export default {
   app: {
-    title: "Hemaishi Bay",
-    footer: "Hemaishi Bay Recharge System v2.0",
+    title: "Electricity Monitoring",
+    footer: "Electricity Monitoring System v2.0",
   },
   header: {
     status: {
