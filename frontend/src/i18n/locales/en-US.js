@@ -6,8 +6,13 @@ export default {
   },
   header: {
     refresh: "Refresh",
+    menu: {
+      open: "Open menu",
+      close: "Close menu",
+    },
     theme: {
       aria: "Select theme",
+      label: "{aria}: {option}",
       options: { light: "Light", dark: "Dark", system: "System" },
     },
     lang: {
@@ -73,5 +78,8 @@ export default {
       series: "Hourly Usage",
     },
     hourlySummary: "Hourly usage (derived from meter reading deltas):",
+  },
+  errors: {
+    fetchFailed: "Failed to fetch electricity data",
   },
 };

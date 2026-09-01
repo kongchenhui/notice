@@ -136,6 +136,7 @@ header {
 }
 
 header .container {
+  position: relative; /* 窄屏下拉菜单的定位参照 */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -153,6 +154,12 @@ header h1 {
   font-weight: 600;
   line-height: 1.5;
   margin: 0;
+  /* 标题永不折行：空间不足时收缩并以省略号截断（§5.6 窄屏折叠菜单） */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 header .meta {
@@ -161,7 +168,8 @@ header .meta {
 }
 
 /* 顶栏右侧控制区：状态 + 数据点 + 刷新/语言/主题按钮
-   - 单行放不下时允许内部换行（§5.3 移动端），换行后整组仍靠右（margin-left: auto）
+   - 桌面宽度：行内展示，整组靠右（margin-left: auto）
+   - 窄屏（<768px）：折叠为汉堡菜单（§5.6），见下方响应式段落
    - 相邻可点元素间距 ≥8px（§5.4） */
 .header-actions {
   display: flex;
@@ -170,6 +178,17 @@ header .meta {
   flex-wrap: wrap;
   gap: 8px;
   margin-left: auto;
+}
+
+/* 窄屏汉堡菜单按钮：桌面隐藏，仅 <768px 显示（见响应式段落） */
+.btn-menu {
+  display: none;
+  margin-left: auto;
+}
+
+/* 菜单内按钮的文字标签：桌面行内隐藏，下拉菜单中显示 */
+.btn-label {
+  display: none;
 }
 
 /* ---------- 主区域 / 页脚（§5.2 / §5.4） ---------- */
@@ -503,7 +522,7 @@ tbody tr:hover {
   }
 
   /* ---------- 顶栏移动端适配（§5.3 / §5.6） ---------- */
-  /* 压缩容器内边距，让标题 + 控件更紧凑 */
+  /* 压缩容器内边距，让标题 + 菜单按钮更紧凑 */
   header .container {
     padding: 8px 12px;
     gap: 8px;
@@ -516,15 +535,90 @@ tbody tr:hover {
   /* 触控目标 ≥44px（§9 无障碍）：移动端按钮加高，间距保持 ≥8px */
   .btn-refresh,
   .btn-theme,
-  .btn-lang {
+  .btn-lang,
+  .btn-menu {
     height: 44px;
   }
 
   /* 图标按钮移动端保持方形 44×44 触控目标 */
   .btn-refresh,
   .btn-theme,
-  .btn-lang {
+  .btn-lang,
+  .btn-menu {
     padding: 0 13px;
+  }
+
+  /* ---------- 窄屏折叠菜单（§5.6） ----------
+     屏幕过窄时，操作按钮（刷新/语言/主题）收进汉堡菜单，
+     避免英文标题 + 按钮在窄屏换行：
+     - 汉堡按钮显示在标题右侧，操作组改为 header 下方的木框下拉面板（§7.1）
+     - 面板内按钮整行铺开，图标 + 文字标签 */
+  .btn-menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-foreground);
+    background: var(--color-muted);
+    border: 2px solid var(--color-border-strong);
+    border-radius: 4px;
+    box-shadow: var(--shadow-btn);
+    cursor: pointer;
+    transition:
+      transform 100ms steps(2, jump-none),
+      box-shadow 100ms steps(2, jump-none),
+      background-color 150ms ease;
+  }
+
+  .btn-menu:hover {
+    background: var(--color-btn-hover);
+  }
+
+  .btn-menu:active {
+    transform: translate(2px, 2px);
+    box-shadow: var(--shadow-hard-sm);
+  }
+
+  .btn-menu .icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .header-actions {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 12px;
+    z-index: 30;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: min(240px, calc(100vw - 24px));
+    padding: 8px;
+    background: var(--color-card);
+    border: 2px solid var(--color-border-strong);
+    border-radius: 4px;
+    box-shadow: var(--shadow-inset), var(--shadow-hard);
+  }
+
+  .header-actions.open {
+    display: flex;
+  }
+
+  /* 面板内按钮整行铺开：图标 + 文字标签（桌面行内隐藏的 .btn-label 在此显示） */
+  .header-actions .btn-refresh,
+  .header-actions .btn-theme,
+  .header-actions .btn-lang {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .header-actions .btn-label {
+    display: inline;
   }
 }
 

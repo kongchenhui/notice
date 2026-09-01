@@ -6,8 +6,13 @@ export default {
   },
   header: {
     refresh: "刷新",
+    menu: {
+      open: "打开菜单",
+      close: "收起菜单",
+    },
     theme: {
       aria: "选择主题",
+      label: "{aria}：{option}",
       options: { light: "亮色", dark: "暗色", system: "跟随系统" },
     },
     lang: {
@@ -73,5 +78,8 @@ export default {
       series: "每小时用电量",
     },
     hourlySummary: "每小时用电量（根据电表读数差值汇总）：",
+  },
+  errors: {
+    fetchFailed: "获取用电数据失败",
   },
 };

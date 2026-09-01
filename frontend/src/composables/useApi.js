@@ -1,4 +1,5 @@
 import { ref, onMounted, onUnmounted } from "vue";
+import i18n from "../i18n";
 
 /**
  * 数据获取组合式函数
@@ -25,7 +26,10 @@ export function useApi() {
       ]);
 
       if (dataRes.success) records.value = dataRes.data;
-      else throw new Error(dataRes.message || "获取用电数据失败");
+      else
+        throw new Error(
+          dataRes.message || i18n.global.t("errors.fetchFailed"),
+        );
 
       if (noticesRes.success) notices.value = noticesRes.data;
 
